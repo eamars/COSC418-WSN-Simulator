@@ -1,4 +1,4 @@
-gnore generated files
+# ignore generated files
 *_m.h
 *_m.cc
 src/Makefile

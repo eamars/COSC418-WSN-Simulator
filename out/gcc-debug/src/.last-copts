@@ -1,0 +1,1 @@
+-DHAVE_SWAPCONTEXT -DWITH_QTENV -DWITH_TKENV -DWITH_MPI -DHAVE_PCAP -DXMLPARSER=expat -DWITH_PARSIM -DWITH_NETBUILDER  -g -Wall -fPIC  -Wno-deprecated-register -fno-stack-protector   -I. -I/home/eamars/Workspace/omnetpp-5.0/include

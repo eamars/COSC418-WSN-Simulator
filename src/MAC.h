@@ -40,7 +40,7 @@ protected:
 protected:
     int bufferSize;
     int maxBackoffs;
-    int backoffDistribution;
+    double backoffDistribution;
 
     // internal variables
     std::vector<AppMessage> macBuffer;

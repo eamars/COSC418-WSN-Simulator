@@ -16,8 +16,16 @@
 package wsl_csma;
 
 //
-// TODO auto-generated module
+// Generate packets to MAC module
 //
 simple PacketGenerator
 {
+	parameters:
+		// random distribution
+		double iatDistribution; 
+		
+		// message size
+		int messageSize @uint(byte); // message size in bytes
+	gates:
+		output out;
 }

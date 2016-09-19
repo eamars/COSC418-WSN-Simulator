@@ -13,15 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma;
+package wsl_csma.simulations;
 
-//
-// Consumes received messages and collects statistics
-//
-simple Sink
+import wsl_csma.PacketGenerator;
+import wsl_csma.MAC;
+
+network TransmitterNode
 {
-    parameters:
-        @display("i=block/sink");
-    gates:
-        input in;
+	submodules:
+		PacketGeneratorModule: PacketGenerator;
+		MACModule: MAC;
+	connections:
+		PacketGeneratorModule.out --> MACModule.in;
 }

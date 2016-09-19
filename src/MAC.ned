@@ -20,4 +20,16 @@ package wsl_csma;
 //
 simple MAC
 {
+	parameters:
+		// buffer size for higher layer packets
+		int bufferSize;
+		
+		// maximum backoff counts
+		int maxBackoffs;
+		
+		// distribution for random backoff period
+		double backoffDistribution;
+		
+	gates:
+		input in;
 }

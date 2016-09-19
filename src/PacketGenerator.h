@@ -38,7 +38,7 @@ protected:
 
 // private variable
 protected:
-    int iatDistribution;
+    double iatDistribution;
     int messageSize;
     int seqno;
 };

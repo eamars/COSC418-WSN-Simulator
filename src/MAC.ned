@@ -32,4 +32,5 @@ simple MAC
 		
 	gates:
 		input in;
+		output out;
 }

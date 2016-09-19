@@ -28,7 +28,7 @@ Transceiver::Transceiver()
 Transceiver::~Transceiver()
 {
     // take parameters
-    txPowerDBm = par("TxPowerDBm");
+    txPowerDBm = par("txPowerDBm");
     bitRate = par("bitRate");
     csThreshDBm = par("csThreshDBm");
     noisePowerDBm = par("noisePowerDBm");

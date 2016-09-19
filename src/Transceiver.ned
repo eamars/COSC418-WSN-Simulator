@@ -20,4 +20,24 @@ package wsl_csma;
 //
 simple Transceiver
 {
+	parameters:
+		// transmit power
+		int txPowerDBm;
+		
+		// bit rate
+		int bitRate;
+		
+		// carrier sensing threshold
+		int csThreshDBm;
+		
+		// the power of noise
+		int noisePowerDBm;
+		
+		// turn around time
+		int turnaroundTime;
+		
+		// time required to carry out carrier sensing operation
+		int csTime;
+	gates:
+		input in;
 }

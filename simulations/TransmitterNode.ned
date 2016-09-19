@@ -17,12 +17,22 @@ package wsl_csma.simulations;
 
 import wsl_csma.PacketGenerator;
 import wsl_csma.MAC;
+import wsl_csma.Transceiver;
 
 network TransmitterNode
 {
-	submodules:
-		PacketGeneratorModule: PacketGenerator;
-		MACModule: MAC;
-	connections:
-		PacketGeneratorModule.out --> MACModule.in;
+    @display("bgb=234,418");
+    submodules:
+        PacketGeneratorModule: PacketGenerator {
+            @display("p=113,66");
+        }
+        MACModule: MAC {
+            @display("p=113,190");
+        }
+        TransceiverModule: Transceiver {
+            @display("p=113,307");
+        }
+    connections:
+        PacketGeneratorModule.out --> MACModule.in;
+        MACModule.out --> TransceiverModule.in;
 }

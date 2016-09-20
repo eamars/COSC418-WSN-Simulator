@@ -39,5 +39,6 @@ simple Transceiver
 		// time required to carry out carrier sensing operation
 		int csTime;
 	gates:
-		input in;
+		inout gate;
+		// output out;
 }

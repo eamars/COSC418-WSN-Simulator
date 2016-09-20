@@ -33,6 +33,6 @@ network TransmitterNode
             @display("p=113,307");
         }
     connections:
-        PacketGeneratorModule.out --> MACModule.in;
-        MACModule.out --> TransceiverModule.in;
+        PacketGeneratorModule.out --> {  delay = 100ms; } --> MACModule.in;
+        MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate;
 }

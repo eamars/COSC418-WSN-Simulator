@@ -41,8 +41,8 @@ void PacketGenerator::initialize()
     // reset the sequence number
     seqno = 0;
 
-    // get parent's id as it's own id
-    senderId = getParentModule()->getId();
+    // get TransmitterNode's identifier
+    senderId = getParentModule()->par("nodeIdentifier");
 
     // create a new message
     AppMessage * msg = generateMessage();

@@ -37,7 +37,9 @@ import wsl_csma.Transceiver;
 
 module ReceiverNode
 {
-	@display("bgb=234,418");
+	parameters:
+    	int nodeXPosition;
+    	int nodeYPosition;
 	gates:
 		inout gate;
 	submodules:

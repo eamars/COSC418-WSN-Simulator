@@ -28,5 +28,5 @@ network Simulation
 		TransmitterNodeModule[2] : TransmitterNode;
 		ReceiverNodeModule : ReceiverNode;
 	connections allowunconnected:
-	
+		
 }

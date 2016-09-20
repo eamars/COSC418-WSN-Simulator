@@ -52,8 +52,8 @@ module TransmitterNode
         }
     connections allowunconnected:
     	// internal connections
-        PacketGeneratorModule.out --> {  delay = 100ms; } --> MACModule.in;
-        MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate1;
+        PacketGeneratorModule.out --> MACModule.in;
+        MACModule.gate <--> TransceiverModule.gate1;
         
         // interface
         TransceiverModule.gate2 <--> gate;

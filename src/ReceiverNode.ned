@@ -53,8 +53,8 @@ module ReceiverNode
         
         connections allowunconnected:
     	// internal connections
-        PacketSinkModule.in <-- {  delay = 100ms; } <-- MACModule.out;
-        MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate1;
+        PacketSinkModule.in <-- MACModule.out;
+        MACModule.gate <--> TransceiverModule.gate1;
         
         // interface
         TransceiverModule.gate2 <--> gate;

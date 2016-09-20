@@ -31,7 +31,6 @@ simple MAC
 		double backoffDistribution;
 		
 	gates:
-		input in;
-		output out;
-		inout gate;
+		inout gate1;
+		inout gate2;
 }

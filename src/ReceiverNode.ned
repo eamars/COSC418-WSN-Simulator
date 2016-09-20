@@ -53,8 +53,8 @@ module ReceiverNode
         
         connections allowunconnected:
     	// internal connections
-        PacketSinkModule.in <-- MACModule.out;
-        MACModule.gate <--> TransceiverModule.gate1;
+        PacketSinkModule.gate <--> MACModule.gate1;
+        MACModule.gate2 <--> TransceiverModule.gate1;
         
         // interface
         TransceiverModule.gate2 <--> gate;

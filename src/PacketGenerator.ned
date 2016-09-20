@@ -27,5 +27,5 @@ simple PacketGenerator
 		// message size
 		int messageSize @uint(byte); // message size in bytes
 	gates:
-		output out;
+		inout gate;
 }

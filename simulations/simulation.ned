@@ -13,32 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma;
+package wsl_csma.simulations;
 
-//
-// TODO auto-generated module
-//
-simple Transceiver
+import wsl_csma.TransmitterNode;
+
+network Simulation
 {
-	parameters:
-		// transmit power
-		int txPowerDBm;
-		
-		// bit rate
-		int bitRate;
-		
-		// carrier sensing threshold
-		int csThreshDBm;
-		
-		// the power of noise
-		int noisePowerDBm;
-		
-		// turn around time
-		int turnaroundTime;
-		
-		// time required to carry out carrier sensing operation
-		int csTime;
-	gates:
-		inout gate1;
-		inout gate2;
+	types:
+		channel Channel extends ned.DelayChannel {
+			delay = 100ms;
+		}
+	submodules:
+		TransmitterNodeModule[2] : TransmitterNode;
+	connections allowunconnected:
+		TransmitterNodeModule[0].gate <--> Channel <--> TransmitterNodeModule[1].gate;
 }

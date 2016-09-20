@@ -13,15 +13,33 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma.simulations;
+package wsl_csma;
 
 import wsl_csma.PacketGenerator;
 import wsl_csma.MAC;
 import wsl_csma.Transceiver;
 
-network TransmitterNode
+// Example structure
+// module Host
+// {
+//    types:
+//        ...
+//    parameters:
+//        ...
+//    gates:
+//        ...
+//    submodules:
+//        ...
+//    connections:
+//        ...
+// }
+
+
+module TransmitterNode
 {
     @display("bgb=234,418");
+    gates:
+    	inout gate;
     submodules:
         PacketGeneratorModule: PacketGenerator {
             @display("p=113,66");
@@ -33,6 +51,10 @@ network TransmitterNode
             @display("p=113,307");
         }
     connections:
+    	// internal connections
         PacketGeneratorModule.out --> {  delay = 100ms; } --> MACModule.in;
-        MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate;
+        MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate1;
+        
+        // interface
+        TransceiverModule.gate2 <--> gate;
 }

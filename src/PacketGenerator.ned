@@ -22,10 +22,10 @@ simple PacketGenerator
 {
 	parameters:
 		// random distribution
-		double iatDistribution; 
+		double iatDistribution = default(10); 
 		
 		// message size
-		int messageSize @uint(byte); // message size in bytes
+		int messageSize = default(1); 
 	gates:
 		inout gate;
 }

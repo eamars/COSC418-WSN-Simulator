@@ -15,6 +15,7 @@
 
 #include "PacketGenerator.h"
 #include "AppMessage_m.h"
+#include <iostream>
 
 namespace wsl_csma {
 
@@ -39,11 +40,60 @@ void PacketGenerator::initialize()
 
     // reset the sequence number
     seqno = 0;
+
+    // get parent's id as it's own id
+    senderId = getParentModule()->getId();
+
+    // create a new message
+    AppMessage * msg = generateMessage();
+
+    // schedule the message immediately
+    scheduleAt(simTime(), msg);
 }
 
 void PacketGenerator::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
+    // check the type of the message
+    if (check_and_cast<AppMessage *>(msg))
+    {
+        // schedule the next transmission
+        // draw a random number
+        double interval = exponential(iatDistribution);
+
+        // create a new message
+        AppMessage * newMsg = generateMessage();
+
+        scheduleAt(simTime() + interval, newMsg);
+    }
+
+    else
+    {
+        delete msg;
+    }
+}
+
+AppMessage * PacketGenerator::generateMessage()
+{
+    // get current simulation time
+    simtime_t timeStamp = simTime();
+
+    // get sequence id
+    int sequenceNumber = seqno++;
+
+    // get message size
+    int msgSize = messageSize;
+
+    // create a new instance of AppMessage
+    AppMessage * msg = new AppMessage;
+
+    // configure the message
+    msg->setTimeStamp(timeStamp);
+    msg->setSenderId(senderId);
+    msg->setSequenceNumber(sequenceNumber);
+    msg->setMsgSize(msgSize);
+
+    return msg;
 }
 
 } //namespace
+

@@ -20,7 +20,7 @@ namespace wsl_csma;
 //
 packet AppMessage {
     // simulation time at which the message has been generated
-    int timeStamp;
+    simtime_t timeStamp;
     
     // the node identification of the TransmitterNode
     int senderId;

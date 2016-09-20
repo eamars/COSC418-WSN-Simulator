@@ -22,6 +22,9 @@ using namespace omnetpp;
 
 namespace wsl_csma {
 
+// Forward declaration
+class AppMessage;
+
 /**
  * TODO - Generated class
  */
@@ -35,12 +38,17 @@ public:
 protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    AppMessage *generateMessage();
 
 // private variable
 protected:
+    // parameters
     double iatDistribution;
     int messageSize;
+
+    // internal variable
     int seqno;
+    int senderId;
 };
 
 } //namespace

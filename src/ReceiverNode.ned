@@ -15,7 +15,7 @@
 
 package wsl_csma;
 
-import wsl_csma.PacketGenerator;
+import wsl_csma.PacketSink;
 import wsl_csma.MAC;
 import wsl_csma.Transceiver;
 
@@ -35,13 +35,13 @@ import wsl_csma.Transceiver;
 // }
 
 
-module TransmitterNode
+module ReceiverNode
 {
-    @display("bgb=234,418");
-    gates:
-    	inout gate;
-    submodules:
-        PacketGeneratorModule: PacketGenerator {
+	@display("bgb=234,418");
+	gates:
+		inout gate;
+	submodules:
+		PacketSinkModule: PacketSink {
             @display("p=113,66");
         }
         MACModule: MAC {
@@ -50,9 +50,10 @@ module TransmitterNode
         TransceiverModule: Transceiver {
             @display("p=113,307");
         }
-    connections allowunconnected:
+        
+        connections allowunconnected:
     	// internal connections
-        PacketGeneratorModule.out --> {  delay = 100ms; } --> MACModule.in;
+        PacketSinkModule.in <-- {  delay = 100ms; } <-- MACModule.out;
         MACModule.gate <--> {  delay = 100ms; } <--> TransceiverModule.gate1;
         
         // interface

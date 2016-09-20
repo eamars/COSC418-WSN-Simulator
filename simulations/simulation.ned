@@ -16,6 +16,7 @@
 package wsl_csma.simulations;
 
 import wsl_csma.TransmitterNode;
+import wsl_csma.ReceiverNode;
 
 network Simulation
 {
@@ -25,6 +26,7 @@ network Simulation
 		}
 	submodules:
 		TransmitterNodeModule[2] : TransmitterNode;
+		ReceiverNodeModule : ReceiverNode;
 	connections allowunconnected:
-		TransmitterNodeModule[0].gate <--> Channel <--> TransmitterNodeModule[1].gate;
+	
 }

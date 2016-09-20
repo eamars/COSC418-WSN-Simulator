@@ -25,7 +25,7 @@ network Simulation
 			delay = 100ms;
 		}
 	submodules:
-		TransmitterNodeModule[2] : TransmitterNode;
+		TransmitterNodeModule : TransmitterNode;
 		ReceiverNodeModule : ReceiverNode;
 	connections allowunconnected:
 		

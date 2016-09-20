@@ -14,6 +14,7 @@
 // 
 
 #include "MAC.h"
+#include <iostream>
 
 namespace wsl_csma {
 
@@ -45,6 +46,7 @@ void MAC::initialize()
 void MAC::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
+    std::cout << "MACRECV" << std::endl;
 }
 
 } //namespace

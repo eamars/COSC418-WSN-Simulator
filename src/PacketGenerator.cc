@@ -47,8 +47,11 @@ void PacketGenerator::initialize()
     // create a new message
     AppMessage * msg = generateMessage();
 
+    // draw a random number
+    double interval = exponential(iatDistribution);
+
     // schedule the message immediately
-    scheduleAt(simTime(), msg);
+    scheduleAt(simTime() + interval, msg);
 }
 
 void PacketGenerator::handleMessage(cMessage *msg)
@@ -56,14 +59,18 @@ void PacketGenerator::handleMessage(cMessage *msg)
     // check the type of the message
     if (check_and_cast<AppMessage *>(msg))
     {
-        // schedule the next transmission
-        // draw a random number
-        double interval = exponential(iatDistribution);
+        // send previous message
+        send(msg, "gate$o");
 
         // create a new message
         AppMessage * newMsg = generateMessage();
 
+        // draw a random number
+        double interval = exponential(iatDistribution);
+
+        // schedule the next transmission
         scheduleAt(simTime() + interval, newMsg);
+
     }
 
     else
@@ -83,8 +90,12 @@ AppMessage * PacketGenerator::generateMessage()
     // get message size
     int msgSize = messageSize;
 
+    // generate message name
+    char msgname[32];
+    snprintf(msgname, 32, "src=%d seq=%d ts=%f", senderId, sequenceNumber, timeStamp.dbl());
+
     // create a new instance of AppMessage
-    AppMessage * msg = new AppMessage;
+    AppMessage * msg = new AppMessage(msgname);
 
     // configure the message
     msg->setTimeStamp(timeStamp);

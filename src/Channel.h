@@ -13,24 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma;
+#ifndef __COSC418_WSN_SIMULATOR_CHANNEL_H_
+#define __COSC418_WSN_SIMULATOR_CHANNEL_H_
 
-//
-// TODO auto-generated module
-//
-simple MAC
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace wsl_csma {
+
+/**
+ * TODO - Generated class
+ */
+class Channel : public cSimpleModule
 {
-	parameters:
-		// buffer size for higher layer packets
-		int bufferSize = default(10);
-		
-		// maximum backoff counts
-		int maxBackoffs = default(15);
-		
-		// distribution for random backoff period
-		double backoffDistribution = default(1.0);
-		
-	gates:
-		inout gate1;
-		inout gate2;
-}
+protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+
+protected:
+    int numGates;
+};
+
+} //namespace
+
+#endif

@@ -13,24 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma;
+namespace wsl_csma;
 
-//
-// TODO auto-generated module
-//
-simple MAC
+packet TransmissionConfirmMessage
 {
-	parameters:
-		// buffer size for higher layer packets
-		int bufferSize = default(10);
-		
-		// maximum backoff counts
-		int maxBackoffs = default(15);
-		
-		// distribution for random backoff period
-		double backoffDistribution = default(1.0);
-		
-	gates:
-		inout gate1;
-		inout gate2;
+    string status;
 }

@@ -15,22 +15,9 @@
 
 package wsl_csma;
 
-//
-// TODO auto-generated module
-//
-simple MAC
+
+simple Channel
 {
-	parameters:
-		// buffer size for higher layer packets
-		int bufferSize = default(10);
-		
-		// maximum backoff counts
-		int maxBackoffs = default(15);
-		
-		// distribution for random backoff period
-		double backoffDistribution = default(1.0);
-		
 	gates:
-		inout gate1;
-		inout gate2;
+		inout gate[];
 }

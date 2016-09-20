@@ -43,7 +43,7 @@ protected:
     double backoffDistribution;
 
     // internal variables
-    std::vector<AppMessage> macBuffer;
+    std::vector<AppMessage *> macBuffer;
     int backoffCounter;
 };
 

@@ -15,9 +15,6 @@
 
 namespace wsl_csma;
 
-//
-// TODO generated message class
-//
 packet AppMessage {
     // simulation time at which the message has been generated
     simtime_t timeStamp;

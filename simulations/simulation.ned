@@ -17,16 +17,23 @@ package wsl_csma.simulations;
 
 import wsl_csma.TransmitterNode;
 import wsl_csma.ReceiverNode;
+import wsl_csma.Channel;
 
 network Simulation
 {
-	types:
-		channel Channel extends ned.DelayChannel {
-			delay = 100ms;
-		}
+	parameters:
+		int numTransmitters = default(2);
 	submodules:
-		TransmitterNodeModule : TransmitterNode;
+		TransmitterNodeModule[numTransmitters] : TransmitterNode;
 		ReceiverNodeModule : ReceiverNode;
+		ChannelModule : Channel;
 	connections allowunconnected:
+		// connect receiver to the channel
+		ChannelModule.gate++ <--> ReceiverNodeModule.gate;
 		
+		// connect transmitters to the channel
+		for i=0..numTransmitters - 1 
+		{
+			ChannelModule.gate++ <--> TransmitterNodeModule[i].gate;
+		}
 }

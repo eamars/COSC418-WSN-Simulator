@@ -14,6 +14,7 @@
 // 
 
 #include "MAC.h"
+#include "AppMessage_m.h"
 #include <iostream>
 
 namespace wsl_csma {
@@ -39,14 +40,32 @@ void MAC::initialize()
     backoffDistribution = par("backoffDistribution");
 
     // local variables
+    // initialize the local packet buffer
     macBuffer.resize(bufferSize);
+    macBuffer.clear();
+
+    // reset the backoff counter
     backoffCounter = 0;
 }
 
 void MAC::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
-    std::cout << "MACRECV" << std::endl;
+    // check the type of the message
+    // if the received packet is from Packet Generator
+    if (AppMessage * appMsg = check_and_cast<AppMessage *>(msg))
+    {
+        // put packet into the macBuffer
+        // if the buffer is full, then drop the packet
+        if (macBuffer.size() == (size_t) bufferSize)
+        {
+            delete appMsg;
+        }
+        else
+        {
+            macBuffer.push_back(appMsg);
+        }
+
+    }
 }
 
 } //namespace

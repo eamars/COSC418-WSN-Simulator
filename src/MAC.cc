@@ -15,6 +15,9 @@
 
 #include "MAC.h"
 #include "AppMessage_m.h"
+#include "MacMessage_m.h"
+#include "CSRequestMessage_m.h"
+#include "CSResponseMessage_m.h"
 #include <iostream>
 
 namespace wsl_csma {
@@ -46,14 +49,19 @@ void MAC::initialize()
 
     // reset the backoff counter
     backoffCounter = 0;
+
+    // reset the MAC state
+    MACState = IDLE;
 }
 
 void MAC::handleMessage(cMessage *msg)
 {
     // check the type of the message
     // if the received packet is from Packet Generator
-    if (AppMessage * appMsg = check_and_cast<AppMessage *>(msg))
+    if (dynamic_cast<AppMessage *>(msg))
     {
+        AppMessage *appMsg = static_cast<AppMessage *>(msg);
+
         // put packet into the macBuffer
         // if the buffer is full, then drop the packet
         if (macBuffer.size() == (size_t) bufferSize)
@@ -66,8 +74,133 @@ void MAC::handleMessage(cMessage *msg)
         {
             macBuffer.push_back(appMsg);
         }
-
     }
+
+    // if the received packet is from Transceiver
+    else if (dynamic_cast<CSResponseMessage *>(msg))
+    {
+        CSResponseMessage *csMsg = static_cast<CSResponseMessage *>(msg);
+
+        // the channel is busy
+        if (csMsg->getBusyChannel())
+        {
+            // increase the backoffCounter
+            backoffCounter++;
+
+            std::cout << "Retry:" << backoffCounter << std::endl;
+
+            // test if the counter has reached the maximum value
+            if (backoffCounter < maxBackoffs)
+            {
+                // wait for a random time
+                double interval = exponential(backoffDistribution);
+
+                // schedule next event
+                // send a dummy packet to itself
+                scheduleAt(simTime() + interval, new cMessage("CSMA_FAILED"));
+
+                // wait for response
+                MACState = CARRIER_SENSE_WAIT;
+            }
+            else
+            {
+                // cancel the schedule for current packet transmission
+                macBuffer.pop_front();
+
+                // cancel the current transmission
+                MACState = IDLE;
+            }
+
+
+        }
+
+        // otherwise transmit immediately
+        else
+        {
+            MACState = TRANSMIT;
+        }
+
+        // destroy the response
+        delete msg;
+    }
+
+    // other packets
+    else
+    {
+        if (strcmp(msg->getName(), "CSMA_FAILED") == 0)
+        {
+            MACState = CARRIER_SENSE_RETRY;
+        }
+
+        // destroy the received packet
+        delete msg;
+    }
+
+    // CSMA procedure
+    switch (MACState)
+    {
+        // the MAC module will stay in IDLE state if there is no packet in the macBuffer
+        case IDLE:
+        {
+            // if there are packets in the macBuffer, then starts the MAC process.
+            if (!macBuffer.empty())
+            {
+                // reset the backoff counter
+                backoffCounter = 0;
+
+                // start the carrier sensing procedure
+                // send a message of type CSRequest to the Transceiver
+                CSRequestMessage *csMsg = new CSRequestMessage;
+
+                send(csMsg, "gate2$o");
+
+                // advance to next state
+                MACState = CARRIER_SENSE_WAIT;
+            }
+            break;
+        }
+        case CARRIER_SENSE_RETRY:
+        {
+            // start the carrier sensing procedure
+            // send a message of type CSRequest to the Transceiver
+            CSRequestMessage *csMsg = new CSRequestMessage;
+
+            send(csMsg, "gate2$o");
+            break;
+        }
+        case CARRIER_SENSE_WAIT:
+        {
+            // the process will trap here until CSResponse is received
+            break;
+        }
+        case TRANSMIT:
+        {
+            // CSResponse is received and the channel is clear to transmit
+            // we already know there will be packet in the queue
+
+            // extract the oldest message from buffer
+            AppMessage *appMsg = macBuffer.front();
+            macBuffer.pop_front();
+
+            // encapsulate it into a message mmsg of type MacMessage
+            MacMessage *mmsg = new MacMessage;
+            mmsg->encapsulate(appMsg);
+
+            // transmit the MacMessage
+            send(mmsg, "gate2$o");
+
+            // back to the IDLE state
+            MACState = IDLE;
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+
 }
 
 } //namespace

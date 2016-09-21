@@ -14,6 +14,8 @@
 // 
 
 #include "Transceiver.h"
+#include "CSRequestMessage_m.h"
+#include "CSResponseMessage_m.h"
 
 namespace wsl_csma {
 
@@ -46,7 +48,21 @@ void Transceiver::initialize()
 
 void Transceiver::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
+    if (dynamic_cast<CSRequestMessage *>(msg))
+    {
+        // DEBUG: always response channel is busy
+        delete msg;
+
+        CSResponseMessage *csMsg = new CSResponseMessage("free");
+        csMsg->setBusyChannel(false);
+
+        send(csMsg, "gate1$o");
+
+    }
+    else
+    {
+        delete msg;
+    }
 }
 
 } //namespace

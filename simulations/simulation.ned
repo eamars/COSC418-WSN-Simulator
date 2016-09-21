@@ -22,7 +22,7 @@ import wsl_csma.Channel;
 network Simulation
 {
 	parameters:
-		int numTransmitters = default(2);
+		int numTransmitters = default(1);
 	submodules:
 		TransmitterNodeModule[numTransmitters] : TransmitterNode;
 		ReceiverNodeModule : ReceiverNode;

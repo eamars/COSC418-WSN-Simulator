@@ -25,10 +25,10 @@ simple MAC
 		int bufferSize = default(10);
 		
 		// maximum backoff counts
-		int maxBackoffs = default(15);
+		int maxBackoffs = default(5);
 		
 		// distribution for random backoff period
-		double backoffDistribution = default(1.0);
+		double backoffDistribution = default(0.5);
 		
 	gates:
 		inout gate1;

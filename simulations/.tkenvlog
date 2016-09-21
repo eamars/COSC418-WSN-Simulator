@@ -93,3 +93,17 @@ Tcl error: moduleinspector.cc#652: ptr0x24d0230 not found
 "ModuleInspector:drawNextEventMarker .network.c ptr0x24d0230 1"
 
 
+---- 20160922-00:29:22 ---------------------------------------------------------
+
+
+Tcl error: moduleinspector.cc#652: ptr0x36c0060 not found
+    while executing
+"error "$tag not found""
+    (procedure "ModuleInspector:getSubmodCoords" line 4)
+    invoked from within
+"ModuleInspector:getSubmodCoords $c $modptr"
+    (procedure "ModuleInspector:drawNextEventMarker" line 2)
+    invoked from within
+"ModuleInspector:drawNextEventMarker .network.c ptr0x36c0060 2"
+
+

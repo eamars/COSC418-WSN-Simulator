@@ -15,7 +15,7 @@
 
 namespace wsl_csma;
 
-packet CSResponseMessage
+packet MacMessage
 {
-    bool busyChannel;
+   
 }

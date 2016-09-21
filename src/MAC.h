@@ -17,7 +17,7 @@
 #define __WSL_CSMA_MAC_H_
 
 #include <omnetpp.h>
-#include <vector>
+#include <deque>
 #include "AppMessage_m.h"
 
 using namespace omnetpp;
@@ -34,6 +34,15 @@ public:
     ~MAC();
 
 protected:
+    typedef enum
+    {
+        IDLE = 0,
+        CARRIER_SENSE_RETRY,
+        CARRIER_SENSE_WAIT,
+        TRANSMIT
+    } MACState_t;
+
+protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
@@ -43,8 +52,9 @@ protected:
     double backoffDistribution;
 
     // internal variables
-    std::vector<AppMessage *> macBuffer;
+    std::deque<AppMessage *> macBuffer;
     int backoffCounter;
+    MACState_t MACState;
 };
 
 } //namespace

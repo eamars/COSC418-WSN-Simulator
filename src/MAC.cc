@@ -130,6 +130,17 @@ void MAC::handleMessage(cMessage *msg)
         delete msg;
     }
 
+    // if the received packet is from other nodes
+    else if (dynamic_cast<MacMessage *>(msg))
+    {
+        MacMessage *macMsg = static_cast<MacMessage *>(msg);
+
+        // deliver to higher layer
+        AppMessage *appMsg = static_cast<AppMessage *>(macMsg->decapsulate());
+
+        send(appMsg, "gate1$o");
+    }
+
     // other packets
     else
     {

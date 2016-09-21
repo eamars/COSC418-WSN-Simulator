@@ -32,7 +32,13 @@ MAC::MAC()
 
 MAC::~MAC()
 {
-
+    // dump all packets in the queue
+    while (macBuffer.size() > 0)
+    {
+        AppMessage *appMsg = macBuffer.front();
+        macBuffer.pop_front();
+        delete appMsg;
+    }
 }
 
 void MAC::initialize()
@@ -87,7 +93,7 @@ void MAC::handleMessage(cMessage *msg)
             // increase the backoffCounter
             backoffCounter++;
 
-            std::cout << "Retry:" << backoffCounter << std::endl;
+            // std::cout << "Retry:" << backoffCounter << std::endl;
 
             // test if the counter has reached the maximum value
             if (backoffCounter < maxBackoffs)
@@ -127,6 +133,7 @@ void MAC::handleMessage(cMessage *msg)
     // other packets
     else
     {
+        // dummy packet for next carrier sensing procedure
         if (strcmp(msg->getName(), "CSMA_FAILED") == 0)
         {
             MACState = CARRIER_SENSE_RETRY;
@@ -166,6 +173,10 @@ void MAC::handleMessage(cMessage *msg)
             CSRequestMessage *csMsg = new CSRequestMessage;
 
             send(csMsg, "gate2$o");
+
+            // advance to next state
+            MACState = CARRIER_SENSE_WAIT;
+
             break;
         }
         case CARRIER_SENSE_WAIT:
@@ -185,6 +196,9 @@ void MAC::handleMessage(cMessage *msg)
             // encapsulate it into a message mmsg of type MacMessage
             MacMessage *mmsg = new MacMessage;
             mmsg->encapsulate(appMsg);
+
+            // nullify the pointer
+            appMsg = nullptr;
 
             // transmit the MacMessage
             send(mmsg, "gate2$o");

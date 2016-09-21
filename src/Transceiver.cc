@@ -53,11 +53,23 @@ void Transceiver::handleMessage(cMessage *msg)
         // DEBUG: always response channel is busy
         delete msg;
 
-        CSResponseMessage *csMsg = new CSResponseMessage("free");
-        csMsg->setBusyChannel(false);
+        static int i = 0;
 
-        send(csMsg, "gate1$o");
+        if (i > 2)
+        {
+            CSResponseMessage *csMsg = new CSResponseMessage("free");
+            csMsg->setBusyChannel(false);
 
+            send(csMsg, "gate1$o");
+        }
+        else
+        {
+            CSResponseMessage *csMsg = new CSResponseMessage("busy");
+            csMsg->setBusyChannel(true);
+
+            send(csMsg, "gate1$o");
+        }
+        i++;
     }
     else
     {

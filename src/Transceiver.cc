@@ -16,6 +16,9 @@
 #include "Transceiver.h"
 #include "CSRequestMessage_m.h"
 #include "CSResponseMessage_m.h"
+#include "TransmissionRequestMessage_m.h"
+#include "TransmissionConfirmMessage_m.h"
+#include "SignalMessage_m.h"
 
 namespace wsl_csma {
 
@@ -38,7 +41,7 @@ Transceiver::~Transceiver()
     csTime = par("csTime");
 
     // initialize internal variable
-    transceiverState = IDLE;
+    transceiverState = RX;
 }
 
 void Transceiver::initialize()
@@ -53,27 +56,45 @@ void Transceiver::handleMessage(cMessage *msg)
         // DEBUG: always response channel is busy
         delete msg;
 
-        static int i = 0;
+        CSResponseMessage *csMsg = new CSResponseMessage("free");
+        csMsg->setBusyChannel(false);
 
-        if (i > 2)
-        {
-            CSResponseMessage *csMsg = new CSResponseMessage("free");
-            csMsg->setBusyChannel(false);
+        send(csMsg, "gate1$o");
 
-            send(csMsg, "gate1$o");
-        }
-        else
-        {
-            CSResponseMessage *csMsg = new CSResponseMessage("busy");
-            csMsg->setBusyChannel(true);
+    }
+    else if (dynamic_cast<TransmissionRequestMessage *>(msg))
+    {
+        // DEBUG: the transceiver is always in rx state
+        delete msg;
 
-            send(csMsg, "gate1$o");
-        }
-        i++;
+        TransmissionConfirmMessage * tcMsg = new TransmissionConfirmMessage("statusOK");
+        tcMsg->setStatus("statusOK");
+
+        send(tcMsg, "gate1$o");
+
     }
     else
     {
         delete msg;
+    }
+
+    // State Machine
+    switch (transceiverState)
+    {
+        case RX:
+        {
+            break;
+        }
+
+        case TX:
+        {
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
     }
 }
 

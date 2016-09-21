@@ -39,7 +39,9 @@ protected:
         IDLE = 0,
         CARRIER_SENSE_RETRY,
         CARRIER_SENSE_WAIT,
-        TRANSMIT
+        TRANSMIT_START,
+        TRANSMIT_WAIT,
+        TRANSMIT_DONE
     } MACState_t;
 
 protected:

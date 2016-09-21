@@ -34,14 +34,8 @@ public:
 protected:
     typedef enum
     {
-        IDLE = 0,
-
-        RX_DONE,
-        RX_TIMEOUT,
-        RX_ERROR,
-
-        TX_DONE,
-        TX_TIMEOUT,
+        RX = 0,
+        TX
     } TransceiverState_t;
 
 protected:

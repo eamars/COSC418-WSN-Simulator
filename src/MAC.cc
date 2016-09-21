@@ -18,6 +18,8 @@
 #include "MacMessage_m.h"
 #include "CSRequestMessage_m.h"
 #include "CSResponseMessage_m.h"
+#include "TransmissionRequestMessage_m.h"
+#include "TransmissionConfirmMessage_m.h"
 #include <iostream>
 
 namespace wsl_csma {
@@ -82,7 +84,7 @@ void MAC::handleMessage(cMessage *msg)
         }
     }
 
-    // if the received packet is from Transceiver
+    // received carrier sensing response packet
     else if (dynamic_cast<CSResponseMessage *>(msg))
     {
         CSResponseMessage *csMsg = static_cast<CSResponseMessage *>(msg);
@@ -111,7 +113,10 @@ void MAC::handleMessage(cMessage *msg)
             else
             {
                 // cancel the schedule for current packet transmission
+                AppMessage *appMsg = macBuffer.front();
                 macBuffer.pop_front();
+
+                delete appMsg;
 
                 // cancel the current transmission
                 MACState = IDLE;
@@ -123,22 +128,35 @@ void MAC::handleMessage(cMessage *msg)
         // otherwise transmit immediately
         else
         {
-            MACState = TRANSMIT;
+            MACState = TRANSMIT_START;
         }
 
         // destroy the response
         delete msg;
     }
 
-    // if the received packet is from other nodes
-    else if (dynamic_cast<MacMessage *>(msg))
+    // received transmission confirm packet
+    else if (dynamic_cast<TransmissionConfirmMessage *>(msg))
     {
-        MacMessage *macMsg = static_cast<MacMessage *>(msg);
+        TransmissionConfirmMessage *tcMsg = static_cast<TransmissionConfirmMessage *>(msg);
 
-        // deliver to higher layer
-        AppMessage *appMsg = static_cast<AppMessage *>(macMsg->decapsulate());
+        // status busy
+        if (strcmp(tcMsg->getStatus(), "statusBusy") == 0)
+        {
+            // TODO: check
+            // reset it's state to IDLE
+            MACState = IDLE;
+        }
 
-        send(appMsg, "gate1$o");
+        // status ok
+        else if (strcmp(tcMsg->getStatus(), "statusOK") == 0)
+        {
+            // set the state to transmit done, we can pop off the packet at the front
+            MACState = TRANSMIT_DONE;
+        }
+
+        // destroy the packet
+        delete msg;
     }
 
     // other packets
@@ -195,30 +213,50 @@ void MAC::handleMessage(cMessage *msg)
             // the process will trap here until CSResponse is received
             break;
         }
-        case TRANSMIT:
+        case TRANSMIT_START:
         {
             // CSResponse is received and the channel is clear to transmit
             // we already know there will be packet in the queue
 
-            // extract the oldest message from buffer
-            AppMessage *appMsg = macBuffer.front();
-            macBuffer.pop_front();
+            // extract the oldest message from buffer (create a deep copy)
+            AppMessage *appMsg = new AppMessage(*macBuffer.front());
 
             // encapsulate it into a message mmsg of type MacMessage
             MacMessage *mmsg = new MacMessage;
             mmsg->encapsulate(appMsg);
 
-            // nullify the pointer
+            // encapsulate again into TransmissionRequest packet
+            TransmissionRequestMessage *trMsg = new TransmissionRequestMessage;
+            trMsg->encapsulate(mmsg);
+
+            // nullify the pointers
             appMsg = nullptr;
+            mmsg = nullptr;
 
             // transmit the MacMessage
-            send(mmsg, "gate2$o");
+            send(trMsg, "gate2$o");
 
-            // back to the IDLE state
-            MACState = IDLE;
+            // wait for transmission confirm
+            MACState = TRANSMIT_WAIT;
 
             break;
         }
+        case TRANSMIT_WAIT:
+        {
+            // the process will trap here until TransmissionConfirm is received
+            break;
+        }
+        case TRANSMIT_DONE:
+        {
+            AppMessage *appMsg = macBuffer.front();
+            macBuffer.pop_front();
+
+            delete appMsg;
+
+            // advance to IDLE state
+            MACState = IDLE;
+        }
+
         default:
         {
             break;

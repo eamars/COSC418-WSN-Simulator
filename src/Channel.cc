@@ -32,16 +32,18 @@ void Channel::handleMessage(cMessage *msg)
 {
     // take messages of type SignalStart or SignalEnd from any Transceiver and sends copies
     // of these to each attached transceiver (including the sending one)
-    if (check_and_cast<SignalMessage *>(msg))
+    if (dynamic_cast<SignalMessage *>(msg))
     {
+        SignalMessage * sMsg = static_cast<SignalMessage *>(msg);
+
         // broadcast the message
         for (int i = 0; i < numGates; i++)
         {
             // create a deep copy of the message
-            cMessage * newMsg = new cMessage(*msg);
+            SignalMessage * newMsg = new SignalMessage(*sMsg);
 
             // distribute to all stations that connect to the same channel
-            send(newMsg, "gate", i);
+            send(newMsg, "gate$o", i);
         }
     }
 

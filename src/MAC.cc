@@ -60,6 +60,8 @@ void MAC::handleMessage(cMessage *msg)
         {
             delete appMsg;
         }
+
+        // otherwise add packet into the buffer
         else
         {
             macBuffer.push_back(appMsg);

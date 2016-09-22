@@ -48,7 +48,7 @@ protected:
     int bitRate;
     int csThreshDBm;
     int noisePowerDBm;
-    int turnaroundTime;
+    double turnaroundTime;
     int csTime;
 
     // internal variables

@@ -15,7 +15,8 @@
 
 #include <Channel.h>
 #include <iostream>
-#include "SignalMessage_m.h"
+#include "SignalStartMessage_m.h"
+#include "SignalStopMessage_m.h"
 
 namespace wsl_csma {
 
@@ -32,21 +33,40 @@ void Channel::handleMessage(cMessage *msg)
 {
     // take messages of type SignalStart or SignalEnd from any Transceiver and sends copies
     // of these to each attached transceiver (including the sending one)
-    if (dynamic_cast<SignalMessage *>(msg))
+    if (dynamic_cast<SignalStartMessage *>(msg))
     {
-        SignalMessage * sMsg = static_cast<SignalMessage *>(msg);
+        SignalStartMessage * sMsg = static_cast<SignalStartMessage *>(msg);
 
         // broadcast the message
         for (int i = 0; i < numGates; i++)
         {
             // create a deep copy of the message
-            SignalMessage * newMsg = new SignalMessage(*sMsg);
+            SignalStartMessage * newMsg = new SignalStartMessage(*sMsg);
 
             // distribute to all stations that connect to the same channel
             send(newMsg, "gate$o", i);
         }
     }
 
+    else if (dynamic_cast<SignalStopMessage *>(msg))
+    {
+        SignalStopMessage * sMsg = static_cast<SignalStopMessage *>(msg);
+
+        // broadcast the message
+        for (int i = 0; i < numGates; i++)
+        {
+            // create a deep copy of the message
+            SignalStopMessage * newMsg = new SignalStopMessage(*sMsg);
+
+            // distribute to all stations that connect to the same channel
+            send(newMsg, "gate$o", i);
+        }
+    }
+
+    else
+    {
+        delete msg;
+    }
 }
 
 } //namespace

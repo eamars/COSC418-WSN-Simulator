@@ -26,14 +26,14 @@ network Simulation
 	submodules:
 		TransmitterNodeModule[numTransmitters] : TransmitterNode;
 		ReceiverNodeModule : ReceiverNode;
-		ChannelModule : Channel;
+		WirelessChannel : Channel;
 	connections allowunconnected:
 		// connect receiver to the channel
-		ChannelModule.gate++ <--> ReceiverNodeModule.gate;
+		WirelessChannel.gate++ <--> ReceiverNodeModule.gate;
 		
 		// connect transmitters to the channel
 		for i=0..numTransmitters - 1 
 		{
-			ChannelModule.gate++ <--> TransmitterNodeModule[i].gate;
+			WirelessChannel.gate++ <--> TransmitterNodeModule[i].gate;
 		}
 }

@@ -17,6 +17,9 @@
 #define __WSL_CSMA_TRANSCEIVER_H_
 
 #include <omnetpp.h>
+#include <vector>
+#include "SignalStartMessage_m.h"
+#include "SignalStopMessage_m.h"
 
 using namespace omnetpp;
 
@@ -42,6 +45,11 @@ protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
+    void updateCurrentTransmissions(SignalStartMessage *startMsg);
+    SignalStartMessage * updateCurrentTransmissions(SignalStopMessage *stopMsg);
+
+    void markAllCollided();
+
 protected:
     // module parameters
     int txPowerDBm;
@@ -53,7 +61,7 @@ protected:
 
     // internal variables
     TransceiverState_t transceiverState;
-    int currentTransmissions; // TODO: maintain a list of active tranmissions
+    std::vector<SignalStartMessage *> currentTransmissions;
 };
 
 } //namespace

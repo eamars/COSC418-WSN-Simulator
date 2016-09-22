@@ -22,6 +22,9 @@
 #include "SignalStartMessage_m.h"
 #include "SignalStopMessage_m.h"
 
+#include <iostream>
+#include <cmath>
+
 namespace wsl_csma {
 
 Define_Module(Transceiver);
@@ -63,6 +66,60 @@ void Transceiver::handleMessage(cMessage *msg)
 
         send(csMsg, "gate1$o");
 
+        return;
+    }
+
+    // Receive Path
+    // process all the SignalStart and SignalStop message coming from the Channel, independent of
+    // whether it is in the transmit or receive state
+    if (dynamic_cast<SignalStartMessage *>(msg))
+    {
+        SignalStartMessage *startMsg = static_cast<SignalStartMessage *>(msg);
+
+        // if at the time of arrival of the SignalStart message, the currentTransmission
+        // list was not empty, then toggle the collidedFlag of newly received and all stored
+        // in the currentTransmission list
+        if (!currentTransmissions.empty())
+        {
+            startMsg->setCollidedFlag(true);
+            markAllCollided();
+        }
+
+        // add SignalStart message to the currentTransmissions list
+        updateCurrentTransmissions(startMsg);
+    }
+    if (dynamic_cast<SignalStopMessage *>(msg))
+    {
+        SignalStopMessage *stopMsg = static_cast<SignalStopMessage *>(msg);
+
+        // when SignalStop message is received
+        SignalStartMessage *startMsg = updateCurrentTransmission(stopMessage);
+
+        // we don't need SignalStop message anymore
+        delete stopMsg;
+
+        // if the collided flag is marked true, then drop the message and do no
+        // further action
+        if (startMsg->getCollidedFlag())
+        {
+            delete startMsg;
+        }
+
+        // not collied
+        else
+        {
+            // calculate the euclidean distance between two nodes
+            int nodeXPosition = getParentModule()->par("nodeXPosition");
+            int nodeYPosition = getParentModule()->par("nodeYPosition");
+
+            int otherXPosition = startMsg->getPositionX();
+            int otherYPosition = startMsg->getPositionY();
+
+            dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
+                    (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
+
+            // TODO: follow the note
+        }
     }
 
     // State Machine
@@ -70,6 +127,7 @@ void Transceiver::handleMessage(cMessage *msg)
     {
         case RX:
         {
+            // Transmit Path
             // phase 1
             // when TransmissionRequest arrived
             if (dynamic_cast<TransmissionRequestMessage *>(msg))
@@ -87,12 +145,17 @@ void Transceiver::handleMessage(cMessage *msg)
                 // wait for the TurnaroundTime
                 scheduleAt(simTime() + turnaroundTime, macMsg);
             }
+            else
+            {
+                delete msg;
+            }
 
             break;
         }
 
         case TX:
         {
+            // Transmit Path
             // when TransmissionRequest arrived, it response with status set to statusBusy
             if (dynamic_cast<TransmissionRequestMessage *>(msg))
             {
@@ -106,6 +169,7 @@ void Transceiver::handleMessage(cMessage *msg)
                 send(tcMsg, "gate1$o");
             }
 
+            // Transmit Path
             // phase 2
             // when mac message is received from itself after the turnaround time
             else if (dynamic_cast<MacMessage *>(msg))
@@ -142,6 +206,7 @@ void Transceiver::handleMessage(cMessage *msg)
 
             else
             {
+                // Transmit Path
                 // phase 3
                 // when the SignalStop message is received
                 if (strcmp(msg->getName(), "PHASE_3") == 0)
@@ -162,6 +227,7 @@ void Transceiver::handleMessage(cMessage *msg)
                     scheduleAt(simTime() + turnaroundTime, new cMessage("PHASE_4"));
                 }
 
+                // Transmit Path
                 // phase 4
                 // when PHASE 4 message is received
                 else if (strcmp(msg->getName(), "PHASE_4") == 0)
@@ -193,6 +259,55 @@ void Transceiver::handleMessage(cMessage *msg)
         {
             break;
         }
+    }
+}
+
+void Transceiver::updateCurrentTransmissions(SignalStartMessage *startMsg)
+{
+    // traverse the list to see if packet with same identifier exists
+    for (auto it = currentTransmissions.begin(); it != currentTransmissions.end(); it++)
+    {
+        // compare the identifier
+        if ((*it)->getIdentifier() == startMsg->getIdentifier())
+        {
+            // TODO: throw an error
+            std::cout << "Transceiver::updateCurrentTransmissions<SignalStartMessage *>::ERROR" << std::endl;
+
+            return;
+        }
+    }
+
+    // if not found, then append at the end (create a deep copy)
+    currentTransmissions.push_back(new SignalStartMessage(*startMsg));
+}
+SignalStartMessage * Transceiver::updateCurrentTransmissions(SignalStopMessage *stopMsg)
+{
+    for (auto it = currentTransmissions.begin(); it != currentTransmissions.end(); it++)
+    {
+        // compare the identifier
+        if ((*it)->getIdentifier() == stopMsg->getIdentifier())
+        {
+            // get the message from list
+            SignalStartMessage *startMsg = *it;
+
+            // remove the message from list
+            currentTransmissions.erase(it);
+
+            return startMsg;
+        }
+    }
+
+    // TODO: throw an error
+    std::cout << "Transceiver::updateCurrentTransmissions<SignalStopMessage *>::ERROR" << std::endl;
+
+    return NULL;
+}
+
+void Transceiver::markAllCollided()
+{
+    for (auto it = currentTransmissions.begin(); it != currentTransmissions.end(); it++)
+    {
+        (*it)->setCollidedFlag(true);
     }
 }
 

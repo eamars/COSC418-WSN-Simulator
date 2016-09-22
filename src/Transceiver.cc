@@ -87,13 +87,15 @@ void Transceiver::handleMessage(cMessage *msg)
 
         // add SignalStart message to the currentTransmissions list
         updateCurrentTransmissions(startMsg);
+
+        return;
     }
     if (dynamic_cast<SignalStopMessage *>(msg))
     {
         SignalStopMessage *stopMsg = static_cast<SignalStopMessage *>(msg);
 
         // when SignalStop message is received
-        SignalStartMessage *startMsg = updateCurrentTransmission(stopMessage);
+        SignalStartMessage *startMsg = updateCurrentTransmissions(stopMsg);
 
         // we don't need SignalStop message anymore
         delete stopMsg;
@@ -115,11 +117,14 @@ void Transceiver::handleMessage(cMessage *msg)
             int otherXPosition = startMsg->getPositionX();
             int otherYPosition = startMsg->getPositionY();
 
-            dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
+            int dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
                     (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
 
             // TODO: follow the note
+            delete startMsg;
         }
+
+        return;
     }
 
     // State Machine

@@ -14,6 +14,8 @@
 // 
 
 #include "PacketSink.h"
+#include "AppMessage_m.h"
+#include <iostream>
 
 namespace wsl_csma {
 
@@ -38,7 +40,16 @@ void PacketSink::initialize()
 
 void PacketSink::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
+    if (dynamic_cast<AppMessage *>(msg))
+    {
+        std::cout << "PacketSink::packet received" << std::endl;
+        delete msg;
+    }
+
+    else
+    {
+        delete msg;
+    }
 }
 
 } //namespace

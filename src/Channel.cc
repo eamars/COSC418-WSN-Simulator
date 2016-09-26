@@ -35,32 +35,37 @@ void Channel::handleMessage(cMessage *msg)
     // of these to each attached transceiver (including the sending one)
     if (dynamic_cast<SignalStartMessage *>(msg))
     {
-        SignalStartMessage * sMsg = static_cast<SignalStartMessage *>(msg);
+        SignalStartMessage * startMsg = static_cast<SignalStartMessage *>(msg);
 
         // broadcast the message
         for (int i = 0; i < numGates; i++)
         {
             // create a deep copy of the message
-            SignalStartMessage * newMsg = new SignalStartMessage(*sMsg);
+            SignalStartMessage * newMsg = new SignalStartMessage(*startMsg);
 
             // distribute to all stations that connect to the same channel
             send(newMsg, "gate$o", i);
         }
+
+        // dispose the original message
+        delete msg;
     }
 
     else if (dynamic_cast<SignalStopMessage *>(msg))
     {
-        SignalStopMessage * sMsg = static_cast<SignalStopMessage *>(msg);
+        SignalStopMessage * stopMsg = static_cast<SignalStopMessage *>(msg);
 
         // broadcast the message
         for (int i = 0; i < numGates; i++)
         {
             // create a deep copy of the message
-            SignalStopMessage * newMsg = new SignalStopMessage(*sMsg);
+            SignalStopMessage * newMsg = new SignalStopMessage(*stopMsg);
 
             // distribute to all stations that connect to the same channel
             send(newMsg, "gate$o", i);
         }
+
+        delete msg;
     }
 
     else

@@ -13,27 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma.simulations;
+namespace wsl_csma;
 
-import wsl_csma.TransmitterNode;
-import wsl_csma.ReceiverNode;
-import wsl_csma.Channel;
-
-network Simulation
+packet TransmissionIndicationMessage
 {
-	parameters:
-		int numTransmitters = default(1);
-	submodules:
-		TransmitterNodeModule[numTransmitters] : TransmitterNode;
-		ReceiverNodeModule : ReceiverNode;
-		WirelessChannel : Channel;
-	connections allowunconnected:
-		// connect receiver to the channel
-		WirelessChannel.gate++ <--> ReceiverNodeModule.gate;
-		
-		// connect transmitters to the channel
-		for i=0..numTransmitters - 1 
-		{
-			WirelessChannel.gate++ <--> TransmitterNodeModule[i].gate;
-		}
+    
 }

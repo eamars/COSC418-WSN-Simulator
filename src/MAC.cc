@@ -20,6 +20,7 @@
 #include "CSResponseMessage_m.h"
 #include "TransmissionRequestMessage_m.h"
 #include "TransmissionConfirmMessage_m.h"
+#include "TransmissionIndicationMessage_m.h"
 #include <iostream>
 
 namespace wsl_csma {
@@ -157,6 +158,24 @@ void MAC::handleMessage(cMessage *msg)
 
         // destroy the packet
         delete msg;
+    }
+
+    // received transmission indication message
+    else if (dynamic_cast<TransmissionIndicationMessage *>(msg))
+    {
+        TransmissionIndicationMessage *tiMsg = static_cast<TransmissionIndicationMessage *>(msg);
+
+        // decapsulate the message and pass to higher layer
+        MacMessage *macMsg = static_cast<MacMessage *>(tiMsg->decapsulate());
+
+        // decapsulate the appmessage
+        AppMessage *appMsg = static_cast<AppMessage *>(macMsg->decapsulate());
+
+        // pass it to higher layer
+        send(appMsg, "gate1$o");
+
+        delete macMsg;
+        delete tiMsg;
     }
 
     // other packets

@@ -19,9 +19,11 @@
 #include "CSResponseMessage_m.h"
 #include "TransmissionRequestMessage_m.h"
 #include "TransmissionConfirmMessage_m.h"
+#include "TransmissionIndicationMessage_m.h"
 #include "SignalStartMessage_m.h"
 #include "SignalStopMessage_m.h"
 #include "global.h"
+#include "misc.h"
 
 #include <iostream>
 #include <cmath>
@@ -57,7 +59,7 @@ void Transceiver::initialize()
 
 void Transceiver::handleMessage(cMessage *msg)
 {
-    // DEBUG::channel is free
+    // TODO: implement carrier sensing
     if (dynamic_cast<CSRequestMessage *>(msg))
     {
         delete msg;
@@ -89,8 +91,12 @@ void Transceiver::handleMessage(cMessage *msg)
         // add SignalStart message to the currentTransmissions list
         updateCurrentTransmissions(startMsg);
 
+        // remove the original start message
+        delete msg;
+
         return;
     }
+
     if (dynamic_cast<SignalStopMessage *>(msg))
     {
         SignalStopMessage *stopMsg = static_cast<SignalStopMessage *>(msg);
@@ -105,12 +111,15 @@ void Transceiver::handleMessage(cMessage *msg)
         // further action
         if (startMsg->getCollidedFlag())
         {
-            delete startMsg;
+
         }
 
         // not collied
         else
         {
+            // extract mac packet
+            MacMessage *mpkt = static_cast<MacMessage *>(startMsg->decapsulate());
+
             // calculate the euclidean distance between two nodes
             int nodeXPosition = getParentModule()->par("nodeXPosition");
             int nodeYPosition = getParentModule()->par("nodeYPosition");
@@ -121,33 +130,77 @@ void Transceiver::handleMessage(cMessage *msg)
             double dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
                     (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
 
-            // get sender id
-            int identifier = startMsg->getIdentifier();
-
             // take account of path loss
             // if the distance is less than the reference distance d0, then there will be
             // no packet loss
             const double dist0 = 1.0;
 
-            double path_loss = 1.0;
+            double path_loss_ratio = 1.0;
 
             // no packet loss
             if (dist < dist0)
             {
-                path_loss = 1;
+                path_loss_ratio = 1;
             }
 
             // loss channel
             else
             {
-                path_loss = pow(dist, pathLossExponent);
+                path_loss_ratio = pow(dist, pathLossExponent);
             }
 
-            // TODO:convert the path loss to db domain
+            // convert the path loss ratio into decibal
+            // using dB = 10 * log10(path_loss_ratio)
+            double path_loss_db = ratio_to_db(path_loss_ratio);
 
-            // TODO: follow the note
-            delete startMsg;
+            // calculate the received power in dBm
+            // using R_db = transmitPower - path_loss_dbm
+            double received_power_db = startMsg->getTransmitPowerDBm() - path_loss_db;
+
+            // get bit rate in dbm
+            double bit_rate_db = ratio_to_db(bitRate);
+
+            // hence we can calculate signal to noise ratio
+            // using snr = receivedPower - (noisePower + bitRate)
+            double snr_db = received_power_db - (noisePowerDBm + bit_rate_db);
+
+            // calculate signal to noise ratio in normal domain
+            double snr = db_to_ratio(snr_db);
+
+            // calculate bit error rate
+            // ref: http://stackoverflow.com/a/18786808/4444357
+            double bit_error_rate = cef(sqrt(2 * snr));
+
+            // calculate packet error rate
+            // using PER = 1 - (1 - BER)^n
+            // ref: https://en.wikipedia.org/wiki/Bit_error_rate
+            int64_t packet_length = mpkt->getBitLength();
+            double packet_error_rate = 1 - pow((1 - bit_error_rate), packet_length);
+
+            // draw a uniformly distributed random number u between 0 and 1, if u < PER, then
+            // top any further processing and drop the packet
+            double u = uniform(0, 1);
+
+            if (u < packet_error_rate)
+            {
+                std::cout << "Transceiver::packet dropped" << std::endl;
+                delete mpkt;
+            }
+            else
+            {
+                // encapsulate into the message and deliver to higher layer
+                TransmissionIndicationMessage * tiMsg = new TransmissionIndicationMessage;
+                tiMsg->encapsulate(mpkt);
+
+                send(tiMsg, "gate1$o");
+
+                // dispose pointer
+                mpkt = nullptr;
+            }
         }
+
+        // dispose the message
+        delete startMsg;
 
         return;
     }

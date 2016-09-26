@@ -22,6 +22,8 @@
 #include "TransmissionIndicationMessage_m.h"
 #include "SignalStartMessage_m.h"
 #include "SignalStopMessage_m.h"
+#include "CSMAInternalMessage_m.h"
+
 #include "global.h"
 #include "misc.h"
 
@@ -55,19 +57,42 @@ void Transceiver::initialize()
 
     // initialize internal variable
     transceiverState = RX;
+
+    // retrieve node position in the network (from parents)
+    nodeXPosition = getParentModule()->par("nodeXPosition");
+    nodeYPosition = getParentModule()->par("nodeYPosition");
 }
 
 void Transceiver::handleMessage(cMessage *msg)
 {
-    // TODO: implement carrier sensing
+    // upon receiving the CSRequest from MAC, it wait for csTime
     if (dynamic_cast<CSRequestMessage *>(msg))
     {
         delete msg;
 
-        CSResponseMessage *csMsg = new CSResponseMessage("free");
-        csMsg->setBusyChannel(false);
+        // traverse and calculate received power for all ongoing transmissions
+        double total_power_ratio = 0.0;
+        for (auto it = currentTransmissions.begin(); it != currentTransmissions.end(); it++)
+        {
+            // calculate the received power in dbm
+            double power_db = getReceivedPowerDBm(*it);
 
-        send(csMsg, "gate1$o");
+            // conver the value to normal domain
+            double power_ratio = db_to_ratio(power_db);
+
+            // sum up
+            total_power_ratio += power_ratio;
+        }
+
+        // convert back to db domain
+        double total_power_db = ratio_to_db(total_power_ratio);
+
+        // keep total power
+        CSMAInternalMessage *ciMsg = new CSMAInternalMessage;
+        ciMsg->setTotalPower(total_power_db);
+
+        // wait for csTime
+        scheduleAt(simTime() + csTime, ciMsg);
 
         return;
     }
@@ -97,6 +122,7 @@ void Transceiver::handleMessage(cMessage *msg)
         return;
     }
 
+    // Receive Path
     if (dynamic_cast<SignalStopMessage *>(msg))
     {
         SignalStopMessage *stopMsg = static_cast<SignalStopMessage *>(msg);
@@ -120,42 +146,9 @@ void Transceiver::handleMessage(cMessage *msg)
             // extract mac packet
             MacMessage *mpkt = static_cast<MacMessage *>(startMsg->decapsulate());
 
-            // calculate the euclidean distance between two nodes
-            int nodeXPosition = getParentModule()->par("nodeXPosition");
-            int nodeYPosition = getParentModule()->par("nodeYPosition");
-
-            int otherXPosition = startMsg->getPositionX();
-            int otherYPosition = startMsg->getPositionY();
-
-            double dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
-                    (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
-
-            // take account of path loss
-            // if the distance is less than the reference distance d0, then there will be
-            // no packet loss
-            const double dist0 = 1.0;
-
-            double path_loss_ratio = 1.0;
-
-            // no packet loss
-            if (dist < dist0)
-            {
-                path_loss_ratio = 1;
-            }
-
-            // loss channel
-            else
-            {
-                path_loss_ratio = pow(dist, pathLossExponent);
-            }
-
-            // convert the path loss ratio into decibal
-            // using dB = 10 * log10(path_loss_ratio)
-            double path_loss_db = ratio_to_db(path_loss_ratio);
-
             // calculate the received power in dBm
             // using R_db = transmitPower - path_loss_dbm
-            double received_power_db = startMsg->getTransmitPowerDBm() - path_loss_db;
+            double received_power_db = getReceivedPowerDBm(startMsg);
 
             // get bit rate in dbm
             double bit_rate_db = ratio_to_db(bitRate);
@@ -228,6 +221,32 @@ void Transceiver::handleMessage(cMessage *msg)
                 // wait for the TurnaroundTime
                 scheduleAt(simTime() + turnaroundTime, macMsg);
             }
+
+            // carrier sensing
+            // in rx state
+            else if (dynamic_cast<CSMAInternalMessage *>(msg))
+            {
+                CSMAInternalMessage *ciMsg = static_cast<CSMAInternalMessage *>(msg);
+
+                // create a new CSResponse message
+                CSResponseMessage *crMsg = new CSResponseMessage;
+
+                // compare with the threshold
+                if (ciMsg->getTotalPower() > csThreshDBm)
+                {
+                    crMsg->setBusyChannel(true);
+                }
+                else
+                {
+                    crMsg->setBusyChannel(false);
+                }
+
+                // dispose message
+                delete ciMsg;
+
+                // send back to mac module
+                send(crMsg, "gate1$o");
+            }
             else
             {
                 delete msg;
@@ -285,6 +304,22 @@ void Transceiver::handleMessage(cMessage *msg)
 
                 // wait for the end of the packet transmission
                 scheduleAt(simTime() + packet_length / bitRate, new cMessage("PHASE_3"));
+            }
+
+            // carrier sensing
+            // in tx state
+            else if (dynamic_cast<CSMAInternalMessage *>(msg))
+            {
+                delete msg;
+
+                // create a new CSResponse message
+                CSResponseMessage *crMsg = new CSResponseMessage;
+
+                // send channel busy
+                crMsg->setBusyChannel(true);
+
+                // send back to mac module
+                send(crMsg, "gate1$o");
             }
 
             else
@@ -392,6 +427,41 @@ void Transceiver::markAllCollided()
     {
         (*it)->setCollidedFlag(true);
     }
+}
+
+double Transceiver::getReceivedPowerDBm(SignalStartMessage *startMsg)
+{
+    // calculate the euclidean distance between two nodes
+    int otherXPosition = startMsg->getPositionX();
+    int otherYPosition = startMsg->getPositionY();
+
+    double dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
+            (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
+
+    // take account of path loss
+    // if the distance is less than the reference distance d0, then there will be
+    // no packet loss
+    const double dist0 = 1.0;
+
+    double path_loss_ratio = 1.0;
+
+    // no packet loss
+    if (dist < dist0)
+    {
+        path_loss_ratio = 1;
+    }
+
+    // loss channel
+    else
+    {
+        path_loss_ratio = pow(dist, pathLossExponent);
+    }
+
+    // convert the path loss ratio into decibal
+    // using dB = 10 * log10(path_loss_ratio)
+    double path_loss_db = ratio_to_db(path_loss_ratio);
+
+    return startMsg->getTransmitPowerDBm() - path_loss_db;
 }
 
 } //namespace

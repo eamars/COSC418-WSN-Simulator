@@ -13,32 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package wsl_csma;
+namespace wsl_csma;
 
-//
-// TODO auto-generated module
-//
-simple Transceiver
+packet CSMAInternalMessage
 {
-	parameters:
-		// transmit power
-		int txPowerDBm = default(0);
-		
-		// bit rate
-		int bitRate = default(25000);
-		
-		// carrier sensing threshold
-		int csThreshDBm = default(0);
-		
-		// the power of noise
-		int noisePowerDBm = default(-120);
-		
-		// turn around time
-		double turnaroundTime = default(2.2);
-		
-		// time required to carry out carrier sensing operation
-		int csTime = default(1);
-	gates:
-		inout gate1;
-		inout gate2;
+    double totalPower;
 }

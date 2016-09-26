@@ -49,6 +49,7 @@ protected:
     SignalStartMessage * updateCurrentTransmissions(SignalStopMessage *stopMsg);
 
     void markAllCollided();
+    double getReceivedPowerDBm(SignalStartMessage *startMsg);
 
 protected:
     // module parameters
@@ -62,6 +63,10 @@ protected:
     // internal variables
     TransceiverState_t transceiverState;
     std::vector<SignalStartMessage *> currentTransmissions;
+
+    // current node position (retrieve at runtime)
+    int nodeXPosition;
+    int nodeYPosition;
 };
 
 } //namespace

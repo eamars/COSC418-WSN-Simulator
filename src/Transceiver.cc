@@ -21,6 +21,7 @@
 #include "TransmissionConfirmMessage_m.h"
 #include "SignalStartMessage_m.h"
 #include "SignalStopMessage_m.h"
+#include "global.h"
 
 #include <iostream>
 #include <cmath>
@@ -117,8 +118,32 @@ void Transceiver::handleMessage(cMessage *msg)
             int otherXPosition = startMsg->getPositionX();
             int otherYPosition = startMsg->getPositionY();
 
-            int dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
+            double dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
                     (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
+
+            // get sender id
+            int identifier = startMsg->getIdentifier();
+
+            // take account of path loss
+            // if the distance is less than the reference distance d0, then there will be
+            // no packet loss
+            const double dist0 = 1.0;
+
+            double path_loss = 1.0;
+
+            // no packet loss
+            if (dist < dist0)
+            {
+                path_loss = 1;
+            }
+
+            // loss channel
+            else
+            {
+                path_loss = pow(dist, pathLossExponent);
+            }
+
+            // TODO:convert the path loss to db domain
 
             // TODO: follow the note
             delete startMsg;

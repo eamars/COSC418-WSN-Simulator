@@ -65,7 +65,7 @@ void Transceiver::initialize()
 
 void Transceiver::handleMessage(cMessage *msg)
 {
-    // upon receiving the CSRequest from MAC, it wait for csTime
+    // upon receiving the CSRequest from MAC, it waits for csTime
     if (dynamic_cast<CSRequestMessage *>(msg))
     {
         delete msg;
@@ -161,7 +161,7 @@ void Transceiver::handleMessage(cMessage *msg)
             double snr = db_to_ratio(snr_db);
 
             // calculate bit error rate
-            // ref: http://stackoverflow.com/a/18786808/4444357
+            // assuming we are using BPSK, 2 logic levels are used here
             double bit_error_rate = cef(sqrt(2 * snr));
 
             // calculate packet error rate

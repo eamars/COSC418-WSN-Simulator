@@ -42,7 +42,6 @@ void PacketSink::handleMessage(cMessage *msg)
 {
     if (dynamic_cast<AppMessage *>(msg))
     {
-        std::cout << "PacketSink::packet received" << std::endl;
         delete msg;
     }
 

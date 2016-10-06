@@ -58,7 +58,7 @@ protected:
     int csThreshDBm;
     int noisePowerDBm;
     double turnaroundTime;
-    int csTime;
+    double csTime;
 
     // internal variables
     TransceiverState_t transceiverState;

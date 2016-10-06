@@ -25,7 +25,7 @@ simple PacketGenerator
 		double iatDistribution; 
 		
 		// message size
-		int messageSize = default(64); 
+		int messageSize; 
 	gates:
 		inout gate;
 }

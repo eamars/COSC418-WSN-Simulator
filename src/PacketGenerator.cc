@@ -50,11 +50,8 @@ void PacketGenerator::initialize()
     // send the message immediately at time 0
     send(appMsg, "gate$o");
 
-    // draw a random number
-    double interval = exponential(iatDistribution);
-
     // schedule the next transmission
-    scheduleAt(simTime() + interval, new cMessage("SCHEDULE"));
+    scheduleAt(simTime() + iatDistribution, new cMessage("SCHEDULE"));
 }
 
 void PacketGenerator::handleMessage(cMessage *msg)
@@ -78,11 +75,8 @@ void PacketGenerator::handleMessage(cMessage *msg)
             // send the message immediately
             send(appMsg, "gate$o");
 
-            // draw a random number
-            double interval = exponential(iatDistribution);
-
             // schedule the next transmission
-            scheduleAt(simTime() + interval, new cMessage("SCHEDULE"));
+            scheduleAt(simTime() + iatDistribution, new cMessage("SCHEDULE"));
         }
 
         delete msg;

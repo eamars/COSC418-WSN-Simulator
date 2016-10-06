@@ -22,13 +22,13 @@ simple MAC
 {
 	parameters:
 		// buffer size for higher layer packets
-		int bufferSize = default(10);
+		int bufferSize;
 		
 		// maximum backoff counts
-		int maxBackoffs = default(5);
+		int maxBackoffs;
 		
 		// distribution for random backoff period
-		double backoffDistribution = default(0.5);
+		double backoffDistribution;
 		
 	gates:
 		inout gate1;

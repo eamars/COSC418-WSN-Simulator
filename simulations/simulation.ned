@@ -22,11 +22,31 @@ import wsl_csma.Channel;
 network Simulation
 {
 	parameters:
-		int numTransmitters = default(1);
+		int numTransmitters;
+		int radius;
+		
+		@display("bgb=0,0");
 	submodules:
-		TransmitterNodeModule[numTransmitters] : TransmitterNode;
-		ReceiverNodeModule : ReceiverNode;
-		WirelessChannel : Channel;
+		TransmitterNodeModule[numTransmitters] : TransmitterNode
+		{
+			nodeIdentifier = index;	
+			nodeXPosition = radius * cos(2 * 3.14159265358979323846 * index / (numTransmitters));
+			nodeYPosition = radius * sin(2 * 3.14159265358979323846 * index / (numTransmitters));
+			
+			@display("p=$nodeXPosition,$nodeYPosition");
+		};
+		ReceiverNodeModule : ReceiverNode
+		{
+			nodeIdentifier = -1;
+			nodeXPosition = 0;
+			nodeYPosition = 0;
+			
+			@display("p=$nodeXPosition,$nodeYPosition");
+		};
+		WirelessChannel : Channel
+		{
+			@display("p=0,0");
+		}
 	connections allowunconnected:
 		// connect receiver to the channel
 		WirelessChannel.gate++ <--> ReceiverNodeModule.gate;

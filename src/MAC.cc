@@ -102,11 +102,9 @@ void MAC::handleMessage(cMessage *msg)
             if (backoffCounter < maxBackoffs)
             {
                 // wait for a random time
-                double interval = exponential(backoffDistribution);
-
                 // schedule next event
                 // send a dummy packet to itself
-                scheduleAt(simTime() + interval, new cMessage("CSMA_FAILED"));
+                scheduleAt(simTime() + backoffDistribution, new cMessage("CSMA_FAILED"));
 
                 // wait for response
                 MACState = CARRIER_SENSE_WAIT;

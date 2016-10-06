@@ -22,22 +22,22 @@ simple Transceiver
 {
 	parameters:
 		// transmit power
-		int txPowerDBm = default(0);
+		int txPowerDBm;
 		
 		// bit rate
-		int bitRate = default(250000);
+		int bitRate;
 		
 		// carrier sensing threshold
-		int csThreshDBm = default(-50);
+		int csThreshDBm;
 		
 		// the power of noise
-		int noisePowerDBm = default(-120.0);
+		int noisePowerDBm;
 		
 		// turn around time
-		double turnaroundTime = default(1e-3);
+		double turnaroundTime;
 		
 		// time required to carry out carrier sensing operation
-		int csTime = default(125e-6);
+		double csTime;
 	gates:
 		inout gate1;
 		inout gate2;

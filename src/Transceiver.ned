@@ -25,19 +25,19 @@ simple Transceiver
 		int txPowerDBm = default(0);
 		
 		// bit rate
-		int bitRate = default(25000);
+		int bitRate = default(250000);
 		
 		// carrier sensing threshold
-		int csThreshDBm = default(0);
+		int csThreshDBm = default(-50);
 		
 		// the power of noise
-		int noisePowerDBm = default(-120);
+		int noisePowerDBm = default(-120.0);
 		
 		// turn around time
-		double turnaroundTime = default(2.2);
+		double turnaroundTime = default(1e-3);
 		
 		// time required to carry out carrier sensing operation
-		int csTime = default(1);
+		int csTime = default(125e-6);
 	gates:
 		inout gate1;
 		inout gate2;

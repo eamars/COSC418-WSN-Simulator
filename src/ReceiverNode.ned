@@ -38,6 +38,7 @@ import wsl_csma.Transceiver;
 module ReceiverNode
 {
 	parameters:
+		int nodeIdentifier = default(-1);
     	int nodeXPosition;
     	int nodeYPosition;
 	gates:

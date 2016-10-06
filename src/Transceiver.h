@@ -67,6 +67,9 @@ protected:
     // current node position (retrieve at runtime)
     int nodeXPosition;
     int nodeYPosition;
+
+    // current node id
+    int nodeIdentifier;
 };
 
 } //namespace

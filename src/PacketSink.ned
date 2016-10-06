@@ -21,7 +21,7 @@ package wsl_csma;
 simple PacketSink
 {
 	parameters:
-		string filename = default("PacketSink");
+		string filename = default("PacketSink.log");
 	gates:
 		inout gate;
 }

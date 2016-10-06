@@ -14,6 +14,7 @@
 // 
 
 #include "Transceiver.h"
+#include "AppMessage_m.h"
 #include "MacMessage_m.h"
 #include "CSRequestMessage_m.h"
 #include "CSResponseMessage_m.h"
@@ -29,6 +30,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <ctgmath>
 
 namespace wsl_csma {
 
@@ -61,6 +63,9 @@ void Transceiver::initialize()
     // retrieve node position in the network (from parents)
     nodeXPosition = getParentModule()->par("nodeXPosition");
     nodeYPosition = getParentModule()->par("nodeYPosition");
+
+    // retrieve node identifier from parent
+    nodeIdentifier = getParentModule()->par("nodeIdentifier");
 }
 
 void Transceiver::handleMessage(cMessage *msg)
@@ -162,21 +167,22 @@ void Transceiver::handleMessage(cMessage *msg)
 
             // calculate bit error rate
             // assuming we are using BPSK, 2 logic levels are used here
-            double bit_error_rate = cef(sqrt(2 * snr));
+            double bit_error_rate = erfc(sqrt(2 * snr));
+
+            // get packet length in bits, stored in AppMessage
+            int packet_length = 8 * static_cast<AppMessage *>(mpkt->getEncapsulatedPacket())->getMsgSize();
 
             // calculate packet error rate
             // using PER = 1 - (1 - BER)^n
             // ref: https://en.wikipedia.org/wiki/Bit_error_rate
-            int64_t packet_length = mpkt->getBitLength();
             double packet_error_rate = 1 - pow((1 - bit_error_rate), packet_length);
 
             // draw a uniformly distributed random number u between 0 and 1, if u < PER, then
-            // top any further processing and drop the packet
+            // stop any further processing and drop the packet
             double u = uniform(0, 1);
 
             if (u < packet_error_rate)
             {
-                std::cout << "Transceiver::packet dropped" << std::endl;
                 delete mpkt;
             }
             else
@@ -278,17 +284,13 @@ void Transceiver::handleMessage(cMessage *msg)
             {
                 MacMessage *macMsg = static_cast<MacMessage *>(msg);
 
-                // retrieve the packet length in bits from the mac packet
-                int64_t packet_length = macMsg->getBitLength();
+                // retrieve the packet length in bits from the mac packet (actually from AppMessage)
+                int64_t packet_length = 8 * static_cast<AppMessage *>(macMsg->getEncapsulatedPacket())->getMsgSize();
 
                 // send a SignalStart message to the channel
                 SignalStartMessage *startMsg = new SignalStartMessage;
 
                 // copy critical information
-                int nodeIdentifier = getParentModule()->par("nodeIdentifier");
-                int nodeXPosition = getParentModule()->par("nodeXPosition");
-                int nodeYPosition = getParentModule()->par("nodeYPosition");
-
                 startMsg->setIdentifier(nodeIdentifier);
                 startMsg->setTransmitPowerDBm(txPowerDBm);
                 startMsg->setPositionX(nodeXPosition);
@@ -431,19 +433,24 @@ void Transceiver::markAllCollided()
 
 double Transceiver::getReceivedPowerDBm(SignalStartMessage *startMsg)
 {
+    // get transmit power in db
+    int transmitPowerDBm = startMsg->getTransmitPowerDBm();
+
     // calculate the euclidean distance between two nodes
     int otherXPosition = startMsg->getPositionX();
     int otherYPosition = startMsg->getPositionY();
 
-    double dist = sqrt((nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition) +
-            (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition));
+    long dx = (nodeXPosition - otherXPosition) * (nodeXPosition - otherXPosition);
+    long dy = (nodeYPosition - otherYPosition) * (nodeYPosition - otherYPosition);
+
+    double dist = sqrt(dx + dy);
 
     // take account of path loss
     // if the distance is less than the reference distance d0, then there will be
     // no packet loss
     const double dist0 = 1.0;
 
-    double path_loss_ratio = 1.0;
+    double path_loss_ratio;
 
     // no packet loss
     if (dist < dist0)
@@ -461,7 +468,10 @@ double Transceiver::getReceivedPowerDBm(SignalStartMessage *startMsg)
     // using dB = 10 * log10(path_loss_ratio)
     double path_loss_db = ratio_to_db(path_loss_ratio);
 
-    return startMsg->getTransmitPowerDBm() - path_loss_db;
+    // calculate received power
+    double receivedPowerDBm = transmitPowerDBm - path_loss_db;
+
+    return receivedPowerDBm;
 }
 
 } //namespace

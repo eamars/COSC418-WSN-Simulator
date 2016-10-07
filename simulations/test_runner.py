@@ -21,6 +21,11 @@ def worker(args):
         # stop the worker if queue is empty
         if task is None:
             break
+        # print received task
+        print(thread_id, "receives", task)
+
+        # print approximate number of tasks left in the queue
+        print(thread_id, task_queue.qsize(), "tasks left")
 
         # execute the incoming command as a subprocess
         p = Popen(task, stdout=PIPE)
@@ -33,12 +38,6 @@ def worker(args):
 
         # print the output
         print(thread_id, out)
-
-        # print received task
-        print(thread_id, "receives", task)
-
-        # print approximate number of tasks left in the queue
-        print(thread_id, task_queue.qsize(), "tasks left")
 
     print(thread_id, "exits")
 

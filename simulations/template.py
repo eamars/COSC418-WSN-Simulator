@@ -10,7 +10,7 @@ EXPERIMENT2 = """\
 [Config MACPacketLossRateSimulation]
 Simulation.numTransmitters = {}
 Simulation.radius = 20
-Simulation.TransmitterNodeModule[*].PacketGeneratorModule.iatDistribution=0.02
+Simulation.TransmitterNodeModule[*].PacketGeneratorModule.iatDistribution=exponential(0.02)
 Simulation.ReceiverNodeModule.PacketSinkModule.filename="exp_stat_nodenum_{}.log"
 """
 

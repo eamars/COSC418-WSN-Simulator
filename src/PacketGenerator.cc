@@ -38,20 +38,14 @@ void PacketGenerator::initialize()
     iatDistribution = par("iatDistribution");
     messageSize = par("messageSize");
 
-    // reset the sequence number
-    seqno = 0;
-
     // get TransmitterNode's identifier
     senderId = getParentModule()->par("nodeIdentifier");
 
-    // create a new message
-    AppMessage * appMsg = generateMessage();
-
-    // send the message immediately at time 0
-    send(appMsg, "gate$o");
-
     // schedule the next transmission
     scheduleAt(simTime() + iatDistribution, new cMessage("SCHEDULE"));
+
+    // reset the sequence number
+    seqno = 0;
 }
 
 void PacketGenerator::handleMessage(cMessage *msg)

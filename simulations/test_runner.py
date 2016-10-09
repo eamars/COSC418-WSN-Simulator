@@ -1,5 +1,7 @@
 import threading
 import queue
+import os
+import sys
 from common import COMMON_CONFIG
 from template import EXPERIMENT1, EXPERIMENT2
 from subprocess import Popen, PIPE
@@ -44,18 +46,20 @@ def worker(args):
 def task1():
     tasks = []
     for dist in range(1, 41):
+        #for iterarion in range(1, 11):
         # create configuration file
         fp = open("exp1_config_dist_{}.ini".format(dist), "w")
         fp.write(COMMON_CONFIG)
         fp.write('\n')
         fp.write(EXPERIMENT1.format(dist, dist))
         fp.close()
-
+    
         # create executable command
         cmd = "../src/COSC418-WSN-Simulator -c ChannelPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp1_config_dist_{}.ini".format(dist)
-
+    
         tasks.append(cmd.split())
-
+        os.system('python3.5 log_in_script.py -S one > {}'. format('testDistance' + str(dist)+'.txt'))
+        os.system('python3.5 cleanUp.py')
     return tasks
 
 def task2():
@@ -71,6 +75,8 @@ def task2():
         # create executable command
         cmd = "../src/COSC418-WSN-Simulator -c MACPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp2_config_nodenum_{}.ini".format(num)
         tasks.append(cmd.split())
+        os.system('python3.5 log_in_script.py -S one > {}'. format('testNum' + str(num)+'.txt'))
+        os.system('python3.5 cleanUp.py')        
 
     return tasks
 
@@ -101,4 +107,6 @@ def main():
         thread.join()
 
 if __name__ == "__main__":
+    os.system('rm testDistance*')
+    os.system('rm testNum*')
     main()

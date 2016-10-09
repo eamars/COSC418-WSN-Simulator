@@ -1,4 +1,5 @@
 import math
+import argparse
 
 LOG_FILES = ['Data_Dropped_MAC.txt', 'Data_Generate.txt', 'Data_Received.txt', 'Data_Transmit.txt']
 
@@ -54,7 +55,8 @@ def taskSimulationOne(generatedPacketFile, receivedPacketFile):
 
     for transmitter in packetGeneratorCollection:
         transmittedPackets += transmitter[1]
-        transmitters.append(transmitter[0])
+        if transmitter[0] not in transmitters:
+            transmitters.append(transmitter[0])
         
     lossRate = ((transmittedPackets - receivedPackets) * 100) / transmittedPackets 
     
@@ -89,11 +91,13 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
     
     for generator in packetGeneratorCollection:
         totalNumGenerated += generator[1]
-        generators.append(generator[0])
+        if generator[0] not in generators:
+            generators.append(generator[0])
     
     for MAC in MAC_Collection:
         totalNumDropped != MAC[1]
-        MACs.append(MAC[0])
+        if MAC[0] not in MACs:
+            MACs.append(MAC[0])
     
     MacOverFlowRate = (totalNumDropped * 100) / totalNumGenerated
     
@@ -126,11 +130,13 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
 
     for transceiver in trancesiverCollection:
         totalNumTransmitted += transceiver[1]
-        tranceivers.append(transceiver[0])
+        if transceiver[0] not in tranceivers:
+            tranceivers.append(transceiver[0])
         
     for receiver in receiverCollection:
         totalNumReceived += receiver[1]
-        receivers.append(receiver[0])
+        if receiver[0] not in receivers:
+            receivers.append(receiver[0])
         
     ChannelLossRate = ((totalNumTransmitted - totalNumReceived)*100)/totalNumTransmitted
     
@@ -140,20 +146,29 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
     
     
 
-def main():
-    
-    #They all write to the same file
-    #use cleanUp.py to remove them
-    #taskSimulationOne(LOG_FILES[1], LOG_FILES[2])
-    taskSimulationTwo(LOG_FILES[1], LOG_FILES[0], LOG_FILES[3], LOG_FILES[2])
+
 
 
 
 
 if __name__ == "__main__":
-    main()
-
-
+    
+    #They all write to the same file
+    #use cleanUp.py to remove them    
+    parser = argparse.ArgumentParser(description = 'Script to run simulations')
+    parser.add_argument('-S','--sim', help = 'Run Simulation tasks, choose one or two!', default = 'one')
+    args = parser.parse_args()
+    testCase = args.sim
+    
+    if testCase == 'one':
+        taskSimulationOne(LOG_FILES[1], LOG_FILES[2])
+    elif testCase == 'two':
+        taskSimulationTwo(LOG_FILES[1], LOG_FILES[0], LOG_FILES[3], LOG_FILES[2])
+    else:
+        print('Please type one or two')
+    
+    
+    
 
 
 

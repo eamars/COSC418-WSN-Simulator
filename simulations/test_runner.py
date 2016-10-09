@@ -45,7 +45,7 @@ def worker(args):
 
 def task1():
     tasks = []
-    for dist in range(1, 41):
+    for dist in range(1, 2):
         #for iterarion in range(1, 11):
         # create configuration file
         fp = open("exp1_config_dist_{}.ini".format(dist), "w")
@@ -58,8 +58,8 @@ def task1():
         cmd = "../src/COSC418-WSN-Simulator -c ChannelPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp1_config_dist_{}.ini".format(dist)
     
         tasks.append(cmd.split())
-        os.system('python3.5 log_in_script.py -S one > {}'. format('testDistance' + str(dist)+'.txt'))
-        os.system('python3.5 cleanUp.py')
+        #os.system('python3.5 log_in_script.py -S one > {}'. format('testDistance' + str(dist)+'.txt'))
+        #os.system('python3.5 cleanUp.py')
     return tasks
 
 def task2():
@@ -75,8 +75,8 @@ def task2():
         # create executable command
         cmd = "../src/COSC418-WSN-Simulator -c MACPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp2_config_nodenum_{}.ini".format(num)
         tasks.append(cmd.split())
-        os.system('python3.5 log_in_script.py -S one > {}'. format('testNum' + str(num)+'.txt'))
-        os.system('python3.5 cleanUp.py')        
+        #os.system('python3.5 log_in_script.py -S two > {}'. format('testNum' + str(num)+'.txt'))
+        #os.system('python3.5 cleanUp.py')        
 
     return tasks
 
@@ -94,7 +94,7 @@ def main():
         thread_pool.append(thread)
 
     # Allocate tasks
-    tasks = task1() + task2()
+    tasks = task1()# + task2()
     for task in tasks:
         task_queue.put(task)
 
@@ -107,6 +107,6 @@ def main():
         thread.join()
 
 if __name__ == "__main__":
-    os.system('rm testDistance*')
-    os.system('rm testNum*')
+    #os.system('rm testDistance*')
+    #os.system('rm testNum*')
     main()

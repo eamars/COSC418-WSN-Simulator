@@ -60,8 +60,8 @@ def taskSimulationOne(generatedPacketFile, receivedPacketFile):
         
     lossRate = ((transmittedPackets - receivedPackets) * 100) / transmittedPackets 
     
-    print('TransmitterNodes #{}   PacketLoss Rate: {}%   Distance: {}'
-              .format(transmitters, lossRate, distance))
+    print('TransmitterNodes #{}   totalGeneratedPackets: {}   totalReceivedPackets: {}   PacketLoss Rate: {}%   Distance: {}\n'
+              .format(transmitters, transmittedPackets, receivedPackets, lossRate, distance))
 
 
 
@@ -73,7 +73,8 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
     MAC_Collection = []    
     totalNumGenerated = 0
     generators = []
-    totalNumDropped = 0
+    totalNumDroppedOverFlow = 0
+    totalNumDroppedTimeOut = 0
     MACs = []
     with open(generatedPacketFile) as g_fp:
         lines = g_fp.read().splitlines()
@@ -95,11 +96,12 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
             generators.append(generator[0])
     
     for MAC in MAC_Collection:
-        totalNumDropped != MAC[1]
+        totalNumDroppedOverFlow += MAC[1]
+        totalNumDroppedTimeOut += MAC[2]
         if MAC[0] not in MACs:
             MACs.append(MAC[0])
     
-    MacOverFlowRate = (totalNumDropped * 100) / totalNumGenerated
+    MacDropRate = ((totalNumDroppedOverFlow + totalNumDroppedTimeOut)* 100) / totalNumGenerated
     
     
     #Part two
@@ -141,8 +143,10 @@ def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPack
     ChannelLossRate = ((totalNumTransmitted - totalNumReceived)*100)/totalNumTransmitted
     
     
-    print('TransmitterNodes #{}   MAC DropRate: {}%'.format(generators, MacOverFlowRate))
-    print('TransmitterNodes #{}   ReceiverNode #{}   Channel LossRate: {}%'.format(tranceivers, receivers, ChannelLossRate))
+    print('TransmitterNodes #{}   OverFlowDroppedPackets: {}   TimeOutDropppedPackets: {}   TotalGeneratedPackets: {}   MAC DropRate: {}%\n'
+          .format(generators, totalNumDroppedOverFlow, totalNumDroppedTimeOut, totalNumGenerated, MacDropRate))
+    print('TransmitterNodes #{}   ReceiverNode #{}   TotalTransmittedPackets: {}   TotalReceivedPackets: {}   Channel LossRate: {}%\n'
+          .format(tranceivers, receivers, totalNumTransmitted, totalNumReceived, ChannelLossRate))
     
     
 

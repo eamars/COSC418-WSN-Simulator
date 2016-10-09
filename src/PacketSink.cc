@@ -51,15 +51,16 @@ PacketSink::~PacketSink()
     fprintf(filePointerToWrite, "ReceiverNode #           NumOfMessage Received         Position(X.Y)\n");
     fprintf(filePointerToWrite, "%d,                      %d,                           %d,%d\n",
             nodeIdentifier, numOfPacketsReceived, nodeXPosition, nodeYPosition);
+
 }
 
 void PacketSink::initialize()
 {
     numOfPacketsReceived = 0;
-    FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
+    MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
     if (MessageLogFilePointer != NULL)
     {
-        fprintf(MessageLogFilePointer, "NumOfMessage Received      ReceiveTime      timeStamp      SenderID      sequenceNumber\n");
+            fprintf(MessageLogFilePointer, "NumOfMessage Received      ReceiveTime      timeStamp      SenderID      sequenceNumber\n");
     }
     // take parameters
     filename = par("filename").str();
@@ -68,18 +69,13 @@ void PacketSink::initialize()
 void PacketSink::handleMessage(cMessage *msg)
 {
     numOfPacketsReceived++;
-
-
-    if (MessageLogFilePointer != NULL) {
-
+    if (MessageLogFilePointer != NULL)
+    {
         AppMessage *appMsg = static_cast<AppMessage *>(msg);
 
-
-        fprintf(MessageLogFilePointer, "%d,                        %d,              %d,           %d,            %d\n",
-                numOfPacketsReceived, 1, appMsg->timeStamp, appMsg->senderId, appMsg->sequenceNumber);
-
+        fprintf(MessageLogFilePointer, "%d,                        %f,              %f,           %d,            %d\n",
+                numOfPacketsReceived, SIMTIME_DBL(simTime()), SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
     }
-
     if (dynamic_cast<AppMessage *>(msg))
     {
         delete msg;

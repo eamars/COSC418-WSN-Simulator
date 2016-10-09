@@ -41,6 +41,7 @@ protected:
 protected:
     std::string filename;
     FILE * MessageLogFilePointer;
+    int fileCreated;
 };
 
 } //namespace

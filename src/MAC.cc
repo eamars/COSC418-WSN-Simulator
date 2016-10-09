@@ -56,16 +56,17 @@ MAC::~MAC()
     int nodeIdentifier = getParentModule()->par("nodeIdentifier");
 
 
-    fprintf(filePointerToWrite, "TransceiverNode #           NumOfMessage Dropped          Position(X.Y)\n");
-    fprintf(filePointerToWrite, "%d,                         %d,                           %d,%d\n",
-           nodeIdentifier, numOfPacketsDropped, nodeXPosition, nodeYPosition);
+    fprintf(filePointerToWrite, "TransceiverNode #           NumOfMessage Dropped-OverFlow          numOfPacketsDroppedTimeOut          Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                         %d,                                    %d,                           %d,%d\n",
+           nodeIdentifier, numOfPacketsDroppedOverFlow, numOfPacketsDroppedTimeOut, nodeXPosition, nodeYPosition);
 
 
 }
 
 void MAC::initialize()
 {
-    numOfPacketsDropped = 0;
+    numOfPacketsDroppedOverFlow = 0;
+    numOfPacketsDroppedTimeOut = 0;
     // take parameters
     bufferSize = par("bufferSize");
     maxBackoffs = par("maxBackoffs");
@@ -95,6 +96,7 @@ void MAC::handleMessage(cMessage *msg)
         // if the buffer is full, then drop the packet
         if (macBuffer.size() == (size_t) bufferSize)
         {
+            numOfPacketsDroppedOverFlow++;
             delete appMsg;
         }
 
@@ -134,7 +136,7 @@ void MAC::handleMessage(cMessage *msg)
                 // cancel the schedule for current packet transmission
                 AppMessage *appMsg = macBuffer.front();
                 macBuffer.pop_front();
-
+                numOfPacketsDroppedTimeOut++;
                 delete appMsg;
 
                 // cancel the current transmission

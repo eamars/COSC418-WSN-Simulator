@@ -46,6 +46,7 @@ PacketGenerator::~PacketGenerator()
     fprintf(filePointerToWrite, "TransceiverNode #         NumOfMessage Generated        Position(X.Y)\n");
     fprintf(filePointerToWrite, "%d,                       %d,                           %d,%d\n",
             nodeIdentifier, numOfPacketsGenerated, nodeXPosition, nodeYPosition);
+    fclose(filePointerToWrite);
 
 }
 

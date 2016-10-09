@@ -28,6 +28,8 @@ def returnNumAndPosition(lineArray):
         
 
 def taskSimulationOne(generatedPacketFile, receivedPacketFile):
+    #We can divide the result by 10 or just use the summed reult
+    #this version took out /10    
     packetGeneratorCollection = []
     packetSinkCollection = []
     transmitters = []
@@ -67,6 +69,8 @@ def taskSimulationOne(generatedPacketFile, receivedPacketFile):
 
 def taskSimulationTwo(generatedPacketFile, MAC_DroppedPacketFile, tranmittedPacketFile, receivedPacketFile):
  
+    #We can divide the result by 10 or just use the summed reult
+    #this version took out /10
     #Part one
     #Packets loss at MAC buffer
     packetGeneratorCollection = []

@@ -56,6 +56,7 @@ Transceiver::~Transceiver()
     fprintf(filePointerToWrite, "TransceiverNode #         NumOfMessage Transmitted      Position(X.Y)\n");
     fprintf(filePointerToWrite, "%d,                       %d,                           %d,%d\n",
             nodeIdentifier, numOfPacketsTransmitted, nodeXPosition, nodeYPosition);
+    fclose(filePointerToWrite);
 
 }
 

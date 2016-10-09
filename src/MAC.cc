@@ -60,7 +60,7 @@ MAC::~MAC()
     fprintf(filePointerToWrite, "%d,                         %d,                                    %d,                           %d,%d\n",
            nodeIdentifier, numOfPacketsDroppedOverFlow, numOfPacketsDroppedTimeOut, nodeXPosition, nodeYPosition);
 
-
+    fclose(filePointerToWrite);
 }
 
 void MAC::initialize()

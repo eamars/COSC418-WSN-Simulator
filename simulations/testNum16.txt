@@ -1,4 +1,0 @@
-TransmitterNodes #[15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]   OverFlowDroppedPackets: 322286   TimeOutDropppedPackets: 0   TotalGeneratedPackets: 1991188   MAC DropRate: 16.18561381446654%
-
-TransmitterNodes #[15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]   ReceiverNode #[-1]   TotalTransmittedPackets: 1668891   TotalReceivedPackets: 1668891   Channel LossRate: 0.0%
-

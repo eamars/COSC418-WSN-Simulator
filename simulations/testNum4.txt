@@ -1,4 +1,0 @@
-TransmitterNodes #[3, 2, 1, 0]   OverFlowDroppedPackets: 0   TimeOutDropppedPackets: 0   TotalGeneratedPackets: 220308   MAC DropRate: 0.0%
-
-TransmitterNodes #[3, 2, 1, 0]   ReceiverNode #[-1]   TotalTransmittedPackets: 220308   TotalReceivedPackets: 220308   Channel LossRate: 0.0%
-

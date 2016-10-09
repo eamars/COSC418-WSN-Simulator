@@ -18,7 +18,8 @@
 
 #include <omnetpp.h>
 #include <string>
-
+#include <deque>
+#include "AppMessage_m.h"
 using namespace omnetpp;
 
 namespace wsl_csma {
@@ -34,14 +35,16 @@ public:
 
     int numOfPacketsReceived;
 
+
 protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
 protected:
     std::string filename;
-    FILE * MessageLogFilePointer;
-    int fileCreated;
+    //std::deque<AppMessage *> macBuffer;
+    AppMessage *sinkBuffer[10000];
+    int writeIndex;
 };
 
 } //namespace

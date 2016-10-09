@@ -25,7 +25,7 @@ def generateConfigFiles():
         
 def runSimulationOne():
     for dist in range(1, 41):
-        for i in range(1,2):
+        for i in range(1,11):
             cmd = "../src/COSC418-WSN-Simulator -c ChannelPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp1_config_dist_{}.ini".format(dist)
             os.system(cmd)
         
@@ -36,7 +36,7 @@ def runSimulationTwo():
     Total = len(range(2, 22, 2)) * len(range(1,2))
     count = 0;
     for num in range(2, 22, 2):
-        for i in range(1,2):
+        for i in range(1,11):
             cmd = "../src/COSC418-WSN-Simulator -c MACPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp2_config_nodenum_{}.ini".format(num)
             os.system(cmd)
             count += 1

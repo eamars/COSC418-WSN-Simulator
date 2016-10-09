@@ -52,15 +52,29 @@ PacketSink::~PacketSink()
     fprintf(filePointerToWrite, "%d,                      %d,                           %d,%d\n",
             nodeIdentifier, numOfPacketsReceived, nodeXPosition, nodeYPosition);
 
+    fclose(filePointerToWrite);
+
+    FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
+
+    for(int i = 0; i < 10000; i++){
+        AppMessage *appMsg = sinkBuffer[i];
+        //we can perfect the formatting later...
+        fprintf(MessageLogFilePointer, "%d,            %f,       %f,        %d,         %d\n",
+                   numOfPacketsReceived, SIMTIME_DBL(simTime()), SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
+    }
+
 }
 
 void PacketSink::initialize()
 {
+    writeIndex = 0;
     numOfPacketsReceived = 0;
-    MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
+    FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
     if (MessageLogFilePointer != NULL)
     {
+
             fprintf(MessageLogFilePointer, "NumOfMessage Received      ReceiveTime      timeStamp      SenderID      sequenceNumber\n");
+            fclose(MessageLogFilePointer);
     }
     // take parameters
     filename = par("filename").str();
@@ -68,14 +82,17 @@ void PacketSink::initialize()
 
 void PacketSink::handleMessage(cMessage *msg)
 {
-    numOfPacketsReceived++;
-    if (MessageLogFilePointer != NULL)
-    {
-        AppMessage *appMsg = static_cast<AppMessage *>(msg);
+    AppMessage *appMsg = static_cast<AppMessage *>(msg);
 
-        fprintf(MessageLogFilePointer, "%d,                        %f,              %f,           %d,            %d\n",
-                numOfPacketsReceived, SIMTIME_DBL(simTime()), SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
+    if (writeIndex < 10000){
+        sinkBuffer[writeIndex] = appMsg;
     }
+    else{
+        //Circulate back to the start
+        writeIndex = 0;
+    }
+    numOfPacketsReceived++;
+    writeIndex++;
     if (dynamic_cast<AppMessage *>(msg))
     {
         delete msg;

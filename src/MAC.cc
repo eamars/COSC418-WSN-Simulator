@@ -42,10 +42,31 @@ MAC::~MAC()
         macBuffer.pop_front();
         delete appMsg;
     }
+
+
+    //std::string filename = "Data_Dropped_MAC.txt";
+    FILE * filePointerToWrite = fopen("Data_Dropped_MAC.txt", "a");
+    if (filePointerToWrite == NULL) return;
+
+    // retrieve node position in the network (from parents)
+    int nodeXPosition = getParentModule()->par("nodeXPosition");
+    int nodeYPosition = getParentModule()->par("nodeYPosition");
+
+    // retrieve node identifier from parent
+    int nodeIdentifier = getParentModule()->par("nodeIdentifier");
+
+
+    fprintf(filePointerToWrite, "Receiver Module #%d\n", nodeIdentifier);
+    fprintf(filePointerToWrite, "NumOfMessage Dropped          Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
+            numOfPacketsDropped, nodeXPosition, nodeYPosition);
+
+
 }
 
 void MAC::initialize()
 {
+    numOfPacketsDropped = 0;
     // take parameters
     bufferSize = par("bufferSize");
     maxBackoffs = par("maxBackoffs");

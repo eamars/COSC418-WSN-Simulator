@@ -29,11 +29,30 @@ PacketGenerator::PacketGenerator()
 
 PacketGenerator::~PacketGenerator()
 {
+    //Number of Packets transmitted VS number of Packets received
+    //PacketSink filename doesnt make sense to be
+    //used here
+    //std::string filename = "Data_Generate.txt";
+    FILE * filePointerToWrite = fopen("Data_Generate.txt", "a");
+    if (filePointerToWrite == NULL) return;
+
+    // retrieve node position in the network (from parents)
+    int nodeXPosition = getParentModule()->par("nodeXPosition");
+    int nodeYPosition = getParentModule()->par("nodeYPosition");
+
+    // retrieve node identifier from parent
+    int nodeIdentifier = getParentModule()->par("nodeIdentifier");
+
+    fprintf(filePointerToWrite, "Transmitter Module #%d\n", nodeIdentifier);
+    fprintf(filePointerToWrite, "NumOfMessage Generated        Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
+            numOfPacketsGenerated, nodeXPosition, nodeYPosition);
 
 }
 
 void PacketGenerator::initialize()
 {
+    numOfPacketsGenerated = 0;
     // take parameters
     iatDistribution = par("iatDistribution");
     messageSize = par("messageSize");
@@ -100,6 +119,8 @@ AppMessage * PacketGenerator::generateMessage()
     msg->setSenderId(senderId);
     msg->setSequenceNumber(sequenceNumber);
     msg->setMsgSize(msgSize);
+
+    numOfPacketsGenerated++;
 
     return msg;
 }

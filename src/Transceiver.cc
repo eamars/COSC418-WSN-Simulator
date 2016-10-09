@@ -45,10 +45,26 @@ Transceiver::Transceiver()
 Transceiver::~Transceiver()
 {
 
+    //Number of Packets transmitted VS number of Packets received
+    //PacketSink filename doesnt make sense to be
+    //used here
+    //std::string filename = "Data_Transmit.txt";
+    FILE * filePointerToWrite = fopen("Data_Transmit.txt", "a");
+    if (filePointerToWrite == NULL) return;
+
+    fprintf(filePointerToWrite, "Transmitter Module #%d\n", nodeIdentifier);
+    fprintf(filePointerToWrite, "NumOfMessage Transmitted      Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
+            numOfPacketsTransmitted, nodeXPosition, nodeYPosition);
+
 }
 
 void Transceiver::initialize()
 {
+    //For experiment #1
+    numOfPacketsTransmitted = 0;
+    numOfPacketsReceived = 0;
+
     // take parameters
     txPowerDBm = par("txPowerDBm");
     bitRate = par("bitRate");
@@ -303,6 +319,8 @@ void Transceiver::handleMessage(cMessage *msg)
 
                 // send the message to the channel
                 send(startMsg, "gate2$o");
+
+                numOfPacketsTransmitted++;
 
                 // wait for the end of the packet transmission
                 scheduleAt(simTime() + packet_length / bitRate, new cMessage("PHASE_3"));

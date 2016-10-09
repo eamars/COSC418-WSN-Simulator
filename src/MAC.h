@@ -33,6 +33,8 @@ public:
     MAC();
     ~MAC();
 
+    int numOfPacketsDropped = 0;
+
 protected:
     typedef enum
     {

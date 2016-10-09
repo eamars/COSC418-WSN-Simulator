@@ -1,0 +1,18 @@
+Receiver Module #-1
+NumOfMessage Dropped          Position(X.Y)
+0,                           (0,0)
+Receiver Module #4
+NumOfMessage Dropped          Position(X.Y)
+0,                           (12,-38)
+Receiver Module #3
+NumOfMessage Dropped          Position(X.Y)
+0,                           (-32,-23)
+Receiver Module #2
+NumOfMessage Dropped          Position(X.Y)
+0,                           (-32,23)
+Receiver Module #1
+NumOfMessage Dropped          Position(X.Y)
+0,                           (12,38)
+Receiver Module #0
+NumOfMessage Dropped          Position(X.Y)
+0,                           (40,0)

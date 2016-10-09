@@ -17,6 +17,7 @@
 #define __WSL_CSMA_PACKETGENERATOR_H_
 
 #include <omnetpp.h>
+#include <stdio.h>
 
 using namespace omnetpp;
 
@@ -33,7 +34,10 @@ class PacketGenerator : public cSimpleModule
 // public methods
 public:
     PacketGenerator();
+    // Record data loss information for further analysis
     ~PacketGenerator();
+
+    int numOfPacketsGenerated;
 
 protected:
     virtual void initialize();

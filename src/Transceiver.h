@@ -20,6 +20,7 @@
 #include <vector>
 #include "SignalStartMessage_m.h"
 #include "SignalStopMessage_m.h"
+#include <stdio.h>
 
 using namespace omnetpp;
 
@@ -33,6 +34,10 @@ class Transceiver : public cSimpleModule
 public:
     Transceiver();
     ~Transceiver();
+
+    int numOfPacketsTransmitted;
+
+    int numOfPacketsReceived;
 
 protected:
     typedef enum

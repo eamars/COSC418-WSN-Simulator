@@ -32,6 +32,8 @@ public:
     PacketSink();
     ~PacketSink();
 
+    int numOfPacketsReceived;
+
 protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

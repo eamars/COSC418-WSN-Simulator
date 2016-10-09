@@ -45,7 +45,7 @@ network Simulation
 		};
 		WirelessChannel : Channel
 		{
-			@display("p=0,0");
+			@display("p=15,15");
 		}
 	connections allowunconnected:
 		// connect receiver to the channel

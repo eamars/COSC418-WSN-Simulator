@@ -1,0 +1,18 @@
+Transmitter Module #-1
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (0,0)
+Transmitter Module #4
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (12,-38)
+Transmitter Module #3
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (-32,-23)
+Transmitter Module #2
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (-32,23)
+Transmitter Module #1
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (12,38)
+Transmitter Module #0
+NumOfMessage Transmitted      Position(X.Y)
+0,                           (40,0)

@@ -1,3 +1,2 @@
-Receiver Module #-1
-NumOfMessage Received         Position(X.Y)
-0,                           (0,0)
+ReceiverNode #           NumOfMessage Received         Position(X.Y)
+-1,                      0,                           0,0

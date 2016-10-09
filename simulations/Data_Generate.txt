@@ -1,15 +1,10 @@
-Transmitter Module #4
-NumOfMessage Generated        Position(X.Y)
-0,                           (12,-38)
-Transmitter Module #3
-NumOfMessage Generated        Position(X.Y)
-0,                           (-32,-23)
-Transmitter Module #2
-NumOfMessage Generated        Position(X.Y)
-0,                           (-32,23)
-Transmitter Module #1
-NumOfMessage Generated        Position(X.Y)
-0,                           (12,38)
-Transmitter Module #0
-NumOfMessage Generated        Position(X.Y)
-0,                           (40,0)
+TransceiverNode #         NumOfMessage Generated        Position(X.Y)
+4,                       4,                           12,-38
+TransceiverNode #         NumOfMessage Generated        Position(X.Y)
+3,                       4,                           -32,-23
+TransceiverNode #         NumOfMessage Generated        Position(X.Y)
+2,                       4,                           -32,23
+TransceiverNode #         NumOfMessage Generated        Position(X.Y)
+1,                       4,                           12,38
+TransceiverNode #         NumOfMessage Generated        Position(X.Y)
+0,                       4,                           40,0

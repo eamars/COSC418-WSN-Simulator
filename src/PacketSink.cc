@@ -15,8 +15,12 @@
 
 #include "PacketSink.h"
 #include "AppMessage_m.h"
-#include <iostream>
+#include "global.h"
+#include "misc.h"
 
+#include <iostream>
+#include <cmath>
+#include <ctgmath>
 namespace wsl_csma {
 
 Define_Module(PacketSink);
@@ -44,15 +48,19 @@ PacketSink::~PacketSink()
     int nodeIdentifier = getParentModule()->par("nodeIdentifier");
 
 
-    fprintf(filePointerToWrite, "Receiver Module #%d\n", nodeIdentifier);
-    fprintf(filePointerToWrite, "NumOfMessage Received         Position(X.Y)\n");
-    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
-            numOfPacketsReceived, nodeXPosition, nodeYPosition);
+    fprintf(filePointerToWrite, "ReceiverNode #           NumOfMessage Received         Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                      %d,                           %d,%d\n",
+            nodeIdentifier, numOfPacketsReceived, nodeXPosition, nodeYPosition);
 }
 
 void PacketSink::initialize()
 {
     numOfPacketsReceived = 0;
+    FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
+    if (MessageLogFilePointer != NULL)
+    {
+        fprintf(MessageLogFilePointer, "NumOfMessage Received      ReceiveTime      timeStamp      SenderID      sequenceNumber\n");
+    }
     // take parameters
     filename = par("filename").str();
 }
@@ -60,6 +68,17 @@ void PacketSink::initialize()
 void PacketSink::handleMessage(cMessage *msg)
 {
     numOfPacketsReceived++;
+
+
+    if (MessageLogFilePointer != NULL) {
+
+        AppMessage *appMsg = static_cast<AppMessage *>(msg);
+
+
+        fprintf(MessageLogFilePointer, "%d,                        %d,              %d,           %d,            %d\n",
+                numOfPacketsReceived, 1, appMsg->timeStamp, appMsg->senderId, appMsg->sequenceNumber);
+
+    }
 
     if (dynamic_cast<AppMessage *>(msg))
     {

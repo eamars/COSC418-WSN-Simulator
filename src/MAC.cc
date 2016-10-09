@@ -56,10 +56,9 @@ MAC::~MAC()
     int nodeIdentifier = getParentModule()->par("nodeIdentifier");
 
 
-    fprintf(filePointerToWrite, "Receiver Module #%d\n", nodeIdentifier);
-    fprintf(filePointerToWrite, "NumOfMessage Dropped          Position(X.Y)\n");
-    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
-            numOfPacketsDropped, nodeXPosition, nodeYPosition);
+    fprintf(filePointerToWrite, "TransceiverNode #           NumOfMessage Dropped          Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                         %d,                           %d,%d\n",
+           nodeIdentifier, numOfPacketsDropped, nodeXPosition, nodeYPosition);
 
 
 }

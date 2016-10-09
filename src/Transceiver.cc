@@ -52,10 +52,10 @@ Transceiver::~Transceiver()
     FILE * filePointerToWrite = fopen("Data_Transmit.txt", "a");
     if (filePointerToWrite == NULL) return;
 
-    fprintf(filePointerToWrite, "Transmitter Module #%d\n", nodeIdentifier);
-    fprintf(filePointerToWrite, "NumOfMessage Transmitted      Position(X.Y)\n");
-    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
-            numOfPacketsTransmitted, nodeXPosition, nodeYPosition);
+
+    fprintf(filePointerToWrite, "TransceiverNode #         NumOfMessage Transmitted      Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                       %d,                           %d,%d\n",
+            nodeIdentifier, numOfPacketsTransmitted, nodeXPosition, nodeYPosition);
 
 }
 

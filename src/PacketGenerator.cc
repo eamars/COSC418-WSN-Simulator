@@ -43,10 +43,9 @@ PacketGenerator::~PacketGenerator()
     // retrieve node identifier from parent
     int nodeIdentifier = getParentModule()->par("nodeIdentifier");
 
-    fprintf(filePointerToWrite, "Transmitter Module #%d\n", nodeIdentifier);
-    fprintf(filePointerToWrite, "NumOfMessage Generated        Position(X.Y)\n");
-    fprintf(filePointerToWrite, "%d,                           (%d,%d)\n",
-            numOfPacketsGenerated, nodeXPosition, nodeYPosition);
+    fprintf(filePointerToWrite, "TransceiverNode #         NumOfMessage Generated        Position(X.Y)\n");
+    fprintf(filePointerToWrite, "%d,                       %d,                           %d,%d\n",
+            nodeIdentifier, numOfPacketsGenerated, nodeXPosition, nodeYPosition);
 
 }
 

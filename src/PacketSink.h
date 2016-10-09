@@ -40,6 +40,7 @@ protected:
 
 protected:
     std::string filename;
+    FILE * MessageLogFilePointer;
 };
 
 } //namespace

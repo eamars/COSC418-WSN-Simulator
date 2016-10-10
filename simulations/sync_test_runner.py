@@ -35,8 +35,8 @@ def runSimulationOne():
 def runSimulationTwo():
     Total = len(range(2, 22, 2)) * len(range(1,2))
     count = 0;
-    for num in range(2, 22, 2):
-        for i in range(1,11):
+    for num in range(16, 22, 2):
+        for i in range(1,2):
             cmd = "../src/COSC418-WSN-Simulator -c MACPacketLossRateSimulation -u Cmdenv -n .:../src --sim-time-limit=1000s exp2_config_nodenum_{}.ini".format(num)
             os.system(cmd)
             count += 1

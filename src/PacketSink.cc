@@ -54,6 +54,7 @@ PacketSink::~PacketSink()
 
     fclose(filePointerToWrite);
 
+    //Start writing our message into log files
     FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
 
     for(int i = 0; i < circBuffSize; i++){
@@ -84,24 +85,28 @@ void PacketSink::initialize()
 
 void PacketSink::handleMessage(cMessage *msg)
 {
-    AppMessage *appMsg = static_cast<AppMessage *>(msg);
 
-    if (writeIndex < circBuffSize){
-        sinkBuffer[writeIndex] = appMsg;
-    }
-    else{
-        //Circulate back to the start
-        writeIndex = 0;
-    }
     numOfPacketsReceived++;
-    writeIndex++;
     if (dynamic_cast<AppMessage *>(msg))
     {
+        //File pointer CAN NOT be handled here
+        AppMessage *appMsg = static_cast<AppMessage *>(msg);
+
+        if (writeIndex < circBuffSize){
+            sinkBuffer[writeIndex] = appMsg;
+        }
+        else{
+            //Circulate back to the start
+            writeIndex = 0;
+            }
+
+        writeIndex++;
         delete msg;
     }
 
     else
     {
+        //It should never reach here
         delete msg;
     }
 }

@@ -45,6 +45,7 @@ protected:
     //std::deque<AppMessage *> macBuffer;
     AppMessage *sinkBuffer[10000];
     int writeIndex;
+    int circBuffSize;
 };
 
 } //namespace

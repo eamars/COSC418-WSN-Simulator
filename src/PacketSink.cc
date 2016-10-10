@@ -56,24 +56,26 @@ PacketSink::~PacketSink()
 
     FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
 
-    for(int i = 0; i < 10000; i++){
+    for(int i = 0; i < circBuffSize; i++){
         AppMessage *appMsg = sinkBuffer[i];
         //we can perfect the formatting later...
-        fprintf(MessageLogFilePointer, "%d,            %f,       %f,        %d,         %d\n",
-                   numOfPacketsReceived, SIMTIME_DBL(simTime()), SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
+        fprintf(MessageLogFilePointer, "%d,                  %d,       %f,        %d,        %d\n",
+                   numOfPacketsReceived, appMsg->msgSize, SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
     }
+    fclose(MessageLogFilePointer);
 
 }
 
 void PacketSink::initialize()
 {
+    circBuffSize = 10000;
     writeIndex = 0;
     numOfPacketsReceived = 0;
     FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
     if (MessageLogFilePointer != NULL)
     {
 
-            fprintf(MessageLogFilePointer, "NumOfMessage Received      ReceiveTime      timeStamp      SenderID      sequenceNumber\n");
+            fprintf(MessageLogFilePointer, "NumOfMessage Received      msgSize      timeStamp      SenderID      sequenceNumber\n");
             fclose(MessageLogFilePointer);
     }
     // take parameters
@@ -84,7 +86,7 @@ void PacketSink::handleMessage(cMessage *msg)
 {
     AppMessage *appMsg = static_cast<AppMessage *>(msg);
 
-    if (writeIndex < 10000){
+    if (writeIndex < circBuffSize){
         sinkBuffer[writeIndex] = appMsg;
     }
     else{

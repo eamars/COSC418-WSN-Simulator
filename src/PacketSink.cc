@@ -33,6 +33,7 @@ PacketSink::PacketSink()
 
 PacketSink::~PacketSink()
 {
+
     //Number of Packets transmitted VS number of Packets received
     //PacketSink filename doesnt make sense to be
     //used here
@@ -57,18 +58,21 @@ PacketSink::~PacketSink()
     //Start writing our message into log files
     FILE * MessageLogFilePointer = fopen("Message_PacketSink.txt", "a");
 
-    for(int i = 0; i < circBuffSize; i++){
+    for(int i = 0; i < numOfPacketsReceived; i++){
+        if(numOfPacketsReceived >= circBuffSize) break;
         AppMessage *appMsg = sinkBuffer[i];
         //we can perfect the formatting later...
-        fprintf(MessageLogFilePointer, "%d,                  %d,       %f,        %d,        %d\n",
+            fprintf(MessageLogFilePointer, "%d,                  %d,       %f,        %d,        %d\n",
                    numOfPacketsReceived, appMsg->msgSize, SIMTIME_DBL(appMsg->timeStamp), appMsg->senderId, appMsg->sequenceNumber);
     }
     fclose(MessageLogFilePointer);
+
 
 }
 
 void PacketSink::initialize()
 {
+    //save memory for heavy-loaded testing
     circBuffSize = 10000;
     writeIndex = 0;
     numOfPacketsReceived = 0;

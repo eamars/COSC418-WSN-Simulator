@@ -409,6 +409,8 @@ void Transceiver::updateCurrentTransmissions(SignalStartMessage *startMsg)
         // compare the identifier
         if ((*it)->getIdentifier() == startMsg->getIdentifier())
         {
+            // For debugging purpose, we let it keep flowing
+            // instead of aborting the program
             // TODO: throw an error
             std::cout << "Transceiver::updateCurrentTransmissions<SignalStartMessage *>::ERROR" << std::endl;
 
@@ -435,7 +437,8 @@ SignalStartMessage * Transceiver::updateCurrentTransmissions(SignalStopMessage *
             return startMsg;
         }
     }
-
+    // For debugging purpose, we let it keep flowing
+    // instead of aborting the program
     // TODO: throw an error
     std::cout << "Transceiver::updateCurrentTransmissions<SignalStopMessage *>::ERROR" << std::endl;
 
